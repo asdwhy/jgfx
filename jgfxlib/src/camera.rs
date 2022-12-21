@@ -1,3 +1,5 @@
+use rand::rngs::SmallRng;
+
 use crate::{point::Point3, vec3::Vec3, ray::Ray};
 
 #[allow(dead_code)]
@@ -42,8 +44,8 @@ impl Camera {
         }
     }
 
-    pub fn get_ray(&self, s: f64, t: f64) -> Ray {
-        let rd = self.lens_radius * Vec3::random_in_unit_disk();
+    pub fn get_ray(&self, rng: &mut SmallRng, s: f64, t: f64) -> Ray {
+        let rd = self.lens_radius * Vec3::random_in_unit_disk(rng);
         let offset = &self.u * rd.x + &self.v * rd.y;
 
         Ray::new(

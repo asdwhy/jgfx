@@ -1,3 +1,5 @@
+use rand::{rngs::SmallRng, Rng};
+
 use crate::{utils::{equal, is_zero, fmin}, random::{random_f64, random_f64_range}};
 
 use std::{ops};
@@ -83,9 +85,10 @@ impl Vec3 {
         }
     }
 
-    pub fn random_in_unit_disk() -> Self {
+    pub fn random_in_unit_disk(rng: &mut SmallRng) -> Self {
+        
         loop {
-            let p = Self::new(random_f64_range(-1.0, 1.0), random_f64_range(-1.0, 1.0), 0.0);
+            let p = Self::new(rng.gen_range(-1.0..1.0), rng.gen_range(-1.0..1.0), 0.0);
             if p.length_squared() >= 1.0 {
                 continue;
             }

@@ -19,9 +19,9 @@ fn main() {
     
     // Image
     let aspect_ratio = 3.0/2.0;
-    let image_width = 1000 as u32;
+    let image_width = 400 as u32;
     let image_height = (image_width  as f64 / aspect_ratio) as u32;
-    let samples_per_pixel = 400;
+    let samples_per_pixel = 15;
     let max_depth = 25;
 
     // World objects

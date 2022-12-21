@@ -1,4 +1,7 @@
+use image::buffer::EnumeratePixelsMut;
 use image::{ImageBuffer, RgbImage, Rgb};
+use rand::{SeedableRng, Rng};
+use rand::rngs::SmallRng;
 use rayon::prelude::*;
 
 use crate::scene::Scene;
@@ -50,35 +53,53 @@ impl Renderer {
     pub fn render(&mut self, scene: &Scene, image_height: u32, image_width: u32) -> RgbImage {
         let mut img = ImageBuffer::new(image_width, image_height);
 
-        let f = |(i, j, pixel): (u32, u32, &mut Rgb<u8>) | {
-            let j = image_height - j;
+        // let f = |(i, j, pixel): (u32, u32, &mut Rgb<u8>) | {
+        //     let j = image_height - j;
+        //                 // because from top down
+
+        //     let col = self.antialias(scene, i, j, image_height, image_width);
+
+        //     *pixel = col.to_rgb();
+        // };
+
+
+        let f2 = |(_, cols): (u32, EnumeratePixelsMut<Rgb<u8>>)| {
+            let mut rng = SmallRng::from_entropy();    
+            
+            cols.for_each(|(i, j, pixel): (u32, u32, &mut Rgb<u8>)| {
+                let j = image_height - j;
                         // because from top down
+                
+                let col = self.antialias(&mut rng, scene, i, j, image_height, image_width);
 
-            let col = self.antialias(scene, i, j, image_height, image_width);
-
-            *pixel = col.to_rgb();
+                *pixel = col.to_rgb();
+            });
         };
 
-        if self.multithreading {
-            img.enumerate_pixels_mut().par_bridge().for_each(f);
-        } else {
-            img.enumerate_pixels_mut().for_each(f);
-        }
+        img.enumerate_rows_mut().par_bridge().for_each(f2);
+
+
+        // if self.multithreading {
+
+        //     img.enumerate_pixels_mut().par_bridge().for_each(f);
+        // } else {
+        //     img.enumerate_pixels_mut().for_each(f);
+        // }
 
         img
     }
 
     /// Antialias num_samples times on pixel (i,j)
-    fn antialias(&self, scene: &Scene, i: u32, j: u32, height: u32, width: u32) -> Colour {
+    fn antialias(&self, rng: &mut SmallRng, scene: &Scene, i: u32, j: u32, height: u32, width: u32) -> Colour {
         let num_samples = self.antialiasing;
         let mut col = Colour::zero();
 
         (0..num_samples).into_iter().for_each(|_| {
 
-            let u_ = ((i as f64) + random_f64()) / (width - 1) as f64;
-            let v_ = ((j as f64) + random_f64()) / (height - 1) as f64;
+            let u_ = ((i as f64) + rng.gen::<f64>()) / (width - 1) as f64;
+            let v_ = ((j as f64) + rng.gen::<f64>()) / (height - 1) as f64;
 
-            let r = scene.camera.get_ray(u_, v_);
+            let r = scene.camera.get_ray(rng, u_, v_);
             col += self.path_trace(scene, r, self.depth);
         });
 
