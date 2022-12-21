@@ -258,11 +258,9 @@ dependencies = [
 name = "jgfxlib"
 version = "0.1.0"
 dependencies = [
- "fastrand",
  "image",
  "rand 0.8.5",
  "rayon",
- "xorshift",
 ]
 
 [[package]]
@@ -553,6 +551,7 @@ name = "render"
 version = "0.1.0"
 dependencies = [
  "jgfxlib",
+ "rand 0.8.5",
 ]
 
 [[package]]

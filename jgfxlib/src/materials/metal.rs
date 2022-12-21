@@ -1,3 +1,5 @@
+use rand::rngs::SmallRng;
+
 use crate::hittables::HitRecord;
 use crate::materials::Material;
 use crate::ray::Ray;
@@ -22,10 +24,10 @@ impl Metal {
 
 impl Material for Metal {
     // Returns (attenuation, scattered_ray) as an option
-    fn scatter(&self, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
+    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
         let reflected_dir = ray_in.dir.normalized().reflect(&rec.n);
 
-        let scattered = Ray::new(&rec.p, &(&reflected_dir + self.fuzzy*Vec3::random_in_unit_sphere()));
+        let scattered = Ray::new(&rec.p, &(&reflected_dir + self.fuzzy*Vec3::random_in_unit_sphere(rng)));
         let attenuation = self.albedo;
 
         if scattered.dir.dot(&rec.n) > 0.0 {

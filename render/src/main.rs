@@ -6,13 +6,14 @@ use jgfxlib::hittables::objects::Object;
 use jgfxlib::materials::dialetric::Dialetric;
 use jgfxlib::materials::lambertian::{Lambertian};
 use jgfxlib::materials::metal::Metal;
-use jgfxlib::random::{random_f64, random_f64_range};
 use jgfxlib::{camera::Camera};
 use jgfxlib::vec3::Vec3;
 use jgfxlib::hittables::objects::sphere::Sphere;
 use jgfxlib::scene::Scene;
 use jgfxlib::point::Point3;
 use jgfxlib::renderer::Renderer;
+use rand::{SeedableRng, Rng};
+use rand::rngs::SmallRng;
 
 fn main() {
     let now = std::time::Instant::now();
@@ -21,7 +22,7 @@ fn main() {
     let aspect_ratio = 3.0/2.0;
     let image_width = 400 as u32;
     let image_height = (image_width  as f64 / aspect_ratio) as u32;
-    let samples_per_pixel = 15;
+    let samples_per_pixel = 100;
     let max_depth = 25;
 
     // World objects
@@ -67,18 +68,21 @@ fn build_scene() -> HittableList {
     sphere.set_radius(1000.0);
     world.add(Arc::new(sphere));
 
+    let mut rng = SmallRng::from_entropy();    
+
+
     for a in -11..11 {
         for b in -11..11 {
             let a = a as f64;
             let b = b as f64;
 
-            let choose_mat = random_f64();
-            let center = Point3::new(a + 0.9 * random_f64(), 0.2, b + 0.9 * random_f64());
+            let choose_mat = rng.gen::<f64>();
+            let center = Point3::new(a + 0.9 * rng.gen::<f64>(), 0.2, b + 0.9 * rng.gen::<f64>());
 
             if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
                 if choose_mat < 0.8 {
                     // diffuse
-                    let albedo = Colour::random() * Colour::random();
+                    let albedo = Colour::random(&mut rng) * Colour::random(&mut rng);
                     let sphere_material = Arc::new(Lambertian::new(albedo));
                     let mut sphere = Sphere::new(sphere_material);
                     sphere.set_origin(center);
@@ -86,8 +90,8 @@ fn build_scene() -> HittableList {
                     world.add(Arc::new(sphere));
                 } else if choose_mat < 0.95 {
                     // metal
-                    let albedo = Colour::random_in_range(0.5, 1.0);
-                    let fuzz = random_f64_range(0.0, 0.5);
+                    let albedo = Colour::random_in_range(&mut rng, 0.5, 1.0);
+                    let fuzz = rng.gen_range(0.0..0.5); 
 
                     let sphere_material = Arc::new(Metal::new(albedo, fuzz));
                     let mut sphere = Sphere::new(sphere_material);

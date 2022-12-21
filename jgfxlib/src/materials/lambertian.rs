@@ -1,3 +1,5 @@
+use rand::rngs::SmallRng;
+
 use crate::hittables::HitRecord;
 use crate::materials::Material;
 use crate::ray::Ray;
@@ -47,8 +49,8 @@ impl Lambertian {
 
 impl Material for Lambertian {
     // Returns (attenuation, scattered_ray) as an option
-    fn scatter(&self, _: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
-        let mut scatter_direction = rec.n + Vec3::random_unit_vector();
+    fn scatter(&self, rng: &mut SmallRng, _: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
+        let mut scatter_direction = rec.n + Vec3::random_unit_vector(rng);
 
         // catch near 0 direction
         if scatter_direction.near_zero() {

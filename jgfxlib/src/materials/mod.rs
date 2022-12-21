@@ -1,9 +1,11 @@
+use rand::rngs::SmallRng;
+
 use crate::{ray::Ray, hittables::HitRecord, colour::Colour};
 
 
 pub trait Material: Send + Sync {
     /// Returns (attenuation, scattered_ray) as an option
-    fn scatter(&self, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)>;
+    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)>;
 }
 
 

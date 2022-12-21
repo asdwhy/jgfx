@@ -1,6 +1,6 @@
 use image::buffer::EnumeratePixelsMut;
 use image::{ImageBuffer, RgbImage, Rgb};
-use rand::{SeedableRng, Rng};
+use rand::{SeedableRng, Rng, thread_rng};
 use rand::rngs::SmallRng;
 use rayon::prelude::*;
 
@@ -10,7 +10,6 @@ use crate::hittables::{Hittable};
 use crate::constants::{INFINITY, EPSILON};
 use crate::utils::max;
 use crate::colour::{Colour};
-use crate::random::random_f64;
 
 pub struct Renderer {
     antialiasing: u32,
@@ -64,7 +63,8 @@ impl Renderer {
 
 
         let f2 = |(_, cols): (u32, EnumeratePixelsMut<Rgb<u8>>)| {
-            let mut rng = SmallRng::from_entropy();    
+            let thread_rng = thread_rng();
+            let mut rng = SmallRng::from_rng(thread_rng).unwrap();    
             
             cols.for_each(|(i, j, pixel): (u32, u32, &mut Rgb<u8>)| {
                 let j = image_height - j;
@@ -100,13 +100,13 @@ impl Renderer {
             let v_ = ((j as f64) + rng.gen::<f64>()) / (height - 1) as f64;
 
             let r = scene.camera.get_ray(rng, u_, v_);
-            col += self.path_trace(scene, r, self.depth);
+            col += self.path_trace(rng, scene, r, self.depth);
         });
 
         col / num_samples as f64
     }
 
-    fn path_trace(&self, scene: &Scene, r: Ray, depth: u32) -> Colour {
+    fn path_trace(&self, rng: &mut SmallRng, scene: &Scene, r: Ray, depth: u32) -> Colour {
         // max recursion limit reached
         if depth <= 0 {
             return Colour::zero();
@@ -123,9 +123,9 @@ impl Renderer {
                 (1.0 - t) * Colour::new(1.0,1.0,1.0) + t*Colour::new(0.5, 0.7, 1.0)
             },
             Some(rec) => {
-                match rec.material.scatter(r, &rec) {
+                match rec.material.scatter(rng, r, &rec) {
                     Some((attenuation, scattered)) => {
-                        attenuation * self.path_trace(scene, scattered, depth - 1)
+                        attenuation * self.path_trace(rng, scene, scattered, depth - 1)
                     },
                     None => Colour::zero()
                 }
