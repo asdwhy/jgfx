@@ -7,11 +7,10 @@ pub struct Ray {
 }
 
 impl Ray {
-
-    pub fn new(orig: &Point3, dir: &Vec3) -> Self {
+    pub fn new(orig: Point3, dir: Vec3) -> Self {
         Self {
-            origin: orig.clone(),
-            dir: dir.clone()
+            origin: orig,
+            dir: dir
         }
     }
 

@@ -45,7 +45,7 @@ impl Material for Dialetric {
             unit_direction.refract(&rec.n, refraction_ratio)
         };
 
-        let scattered = Ray::new(&rec.p, &direction);
+        let scattered = Ray::new(rec.p.clone(), direction);
 
         Some((attenuation, scattered))
     }

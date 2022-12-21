@@ -22,15 +22,19 @@ impl HitRecord {
     /// Ensure that the normal on this rec points against the ray
     pub fn set_face_normal(&mut self, r: &Ray) {
         self.front_face = r.dir.dot(&self.n) < 0.0;
-        self.n = if self.front_face { self.n } else { -self.n }
+        
+        if !self.front_face { 
+            self.n = - &self.n; 
+        }
+
+        // self.n = if self.front_face { self.n } else { -self.n }
     }
 }
 
 pub trait Hittable: Send + Sync {
-    // fn new() -> Self where Self: Sized;
     fn intersect(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
 }
 
 
 pub mod hittable_list;
-pub mod objects;
+pub mod sphere;

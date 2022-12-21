@@ -2,13 +2,12 @@ use std::{sync::Arc};
 
 use jgfxlib::colour::Colour;
 use jgfxlib::hittables::hittable_list::HittableList;
-use jgfxlib::hittables::objects::Object;
 use jgfxlib::materials::dialetric::Dialetric;
 use jgfxlib::materials::lambertian::{Lambertian};
 use jgfxlib::materials::metal::Metal;
 use jgfxlib::{camera::Camera};
 use jgfxlib::vec3::Vec3;
-use jgfxlib::hittables::objects::sphere::Sphere;
+use jgfxlib::hittables::sphere::Sphere;
 use jgfxlib::scene::Scene;
 use jgfxlib::point::Point3;
 use jgfxlib::renderer::Renderer;
@@ -20,9 +19,9 @@ fn main() {
     
     // Image
     let aspect_ratio = 3.0/2.0;
-    let image_width = 400 as u32;
+    let image_width = 32 as u32;
     let image_height = (image_width  as f64 / aspect_ratio) as u32;
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 1000;
     let max_depth = 25;
 
     // World objects
@@ -32,7 +31,7 @@ fn main() {
     let lookfrom = Vec3::new(13.0, 2.0, 3.0);
     let lookat = Vec3::new(0.0,0.0,0.0);
     let up = Vec3::new(0.0,1.0,0.0);
-    let aperture = 0.2;
+    let aperture = 0.1;
     let dist_to_focus = 10.0;
 
     let cam = Camera::new(lookfrom, lookat, up, 20.0, aspect_ratio, aperture, dist_to_focus);
@@ -42,10 +41,9 @@ fn main() {
 
     // Render
     let mut renderer = Renderer::new();
-    renderer.set_antialiasing(samples_per_pixel);
-    renderer.set_debug(false);
+    renderer.set_num_samples(samples_per_pixel);
     renderer.set_depth(max_depth);
-    renderer.set_multithreading(true);
+    renderer.set_multithreading(false);
 
     let img = renderer.render(&scene, image_height, image_width);
 
@@ -79,7 +77,7 @@ fn build_scene() -> HittableList {
             let choose_mat = rng.gen::<f64>();
             let center = Point3::new(a + 0.9 * rng.gen::<f64>(), 0.2, b + 0.9 * rng.gen::<f64>());
 
-            if (center - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
+            if (center.clone() - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
                 if choose_mat < 0.8 {
                     // diffuse
                     let albedo = Colour::random(&mut rng) * Colour::random(&mut rng);

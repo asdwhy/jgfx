@@ -5,8 +5,7 @@ use crate::vec3::Vec3;
 use crate::{point::Point3};
 use crate::ray::Ray;
 use crate::utils::in_range;
-use crate::hittables::HitRecord;
-use crate::hittables::objects::Object;
+use crate::hittables::{HitRecord,Hittable};
 
 pub struct Sphere {
     pub origin: Point3,
@@ -14,15 +13,25 @@ pub struct Sphere {
     pub material: Arc<dyn Material>
 }
 
-impl Object for Sphere {
-    fn new(material: Arc<dyn Material>) -> Self where Self: Sized {
+impl Sphere {
+    pub fn new(material: Arc<dyn Material>) -> Self where Self: Sized {
         Self {
             origin: Vec3::zero(),
             radius: 1.0,
             material: material.clone()
         }
     }
+    
+    pub fn set_origin(&mut self, origin: Point3) {
+        self.origin = origin;
+    }
 
+    pub fn set_radius(&mut self, radius: f64) {
+        self.radius = radius;
+    }
+}
+
+impl Hittable for Sphere {
     fn intersect(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = &r.origin - &self.origin;
         let a = r.dir.length_squared();
@@ -56,14 +65,4 @@ impl Object for Sphere {
         Some(rec)
     }
 
-}
-
-impl Sphere {
-    pub fn set_origin(&mut self, origin: Point3) {
-        self.origin = origin;
-    }
-
-    pub fn set_radius(&mut self, radius: f64) {
-        self.radius = radius;
-    }
 }

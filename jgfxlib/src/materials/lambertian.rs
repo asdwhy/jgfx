@@ -50,16 +50,16 @@ impl Lambertian {
 impl Material for Lambertian {
     // Returns (attenuation, scattered_ray) as an option
     fn scatter(&self, rng: &mut SmallRng, _: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
-        let mut scatter_direction = rec.n + Vec3::random_unit_vector(rng);
+        let mut scatter_direction = &rec.n + Vec3::random_unit_vector(rng);
 
         // catch near 0 direction
         if scatter_direction.near_zero() {
-            scatter_direction = rec.n;
+            scatter_direction = rec.n.clone();
         }
 
-        let scattered = Ray::new(&rec.p, &scatter_direction);
+        let scattered = Ray::new(rec.p.clone(), scatter_direction);
         
-        Some((self.albedo, scattered))
+        Some((self.albedo.clone(), scattered))
     }
 }
 

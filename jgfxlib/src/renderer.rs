@@ -12,31 +12,24 @@ use crate::utils::max;
 use crate::colour::{Colour};
 
 pub struct Renderer {
-    antialiasing: u32,
+    num_samples: u32,
     depth: u32,
-    debug: bool,
     multithreading: bool,
 }
 
 impl Renderer {
     pub fn new() -> Self {
         Self {
-            antialiasing: 10,
+            num_samples: 10,
             depth: 10,
-            debug: false,
             multithreading: false,
         }
     }
 
     /// Set image to take val samples
-    /// If val is 0, will sample once
-    pub fn set_antialiasing(&mut self, val: u32) {
-        self.antialiasing = max(1, val);
-    }
-
-    /// Print debug messages
-    pub fn set_debug(&mut self, val: bool) {
-        self.debug = val;
+    /// Will sample minimum of one time
+    pub fn set_num_samples(&mut self, num_samples: u32) {
+        self.num_samples = max(1, num_samples);
     }
 
     /// Set the recursion depth
@@ -52,17 +45,7 @@ impl Renderer {
     pub fn render(&mut self, scene: &Scene, image_height: u32, image_width: u32) -> RgbImage {
         let mut img = ImageBuffer::new(image_width, image_height);
 
-        // let f = |(i, j, pixel): (u32, u32, &mut Rgb<u8>) | {
-        //     let j = image_height - j;
-        //                 // because from top down
-
-        //     let col = self.antialias(scene, i, j, image_height, image_width);
-
-        //     *pixel = col.to_rgb();
-        // };
-
-
-        let f2 = |(_, cols): (u32, EnumeratePixelsMut<Rgb<u8>>)| {
+        let f = |(_, cols): (u32, EnumeratePixelsMut<Rgb<u8>>)| {
             let thread_rng = thread_rng();
             let mut rng = SmallRng::from_rng(thread_rng).unwrap();    
             
@@ -70,32 +53,26 @@ impl Renderer {
                 let j = image_height - j;
                         // because from top down
                 
-                let col = self.antialias(&mut rng, scene, i, j, image_height, image_width);
+                let col = self.sample_pixel(&mut rng, scene, i, j, image_height, image_width);
 
                 *pixel = col.to_rgb();
             });
         };
 
-        img.enumerate_rows_mut().par_bridge().for_each(f2);
-
-
-        // if self.multithreading {
-
-        //     img.enumerate_pixels_mut().par_bridge().for_each(f);
-        // } else {
-        //     img.enumerate_pixels_mut().for_each(f);
-        // }
+        if self.multithreading {
+            img.enumerate_rows_mut().par_bridge().for_each(f);
+        } else {
+            img.enumerate_rows_mut().for_each(f);
+        }
 
         img
     }
 
     /// Antialias num_samples times on pixel (i,j)
-    fn antialias(&self, rng: &mut SmallRng, scene: &Scene, i: u32, j: u32, height: u32, width: u32) -> Colour {
-        let num_samples = self.antialiasing;
+    fn sample_pixel(&self, rng: &mut SmallRng, scene: &Scene, i: u32, j: u32, height: u32, width: u32) -> Colour {
         let mut col = Colour::zero();
 
-        (0..num_samples).into_iter().for_each(|_| {
-
+        (0..self.num_samples).for_each(|_| {
             let u_ = ((i as f64) + rng.gen::<f64>()) / (width - 1) as f64;
             let v_ = ((j as f64) + rng.gen::<f64>()) / (height - 1) as f64;
 
@@ -103,7 +80,7 @@ impl Renderer {
             col += self.path_trace(rng, scene, r, self.depth);
         });
 
-        col / num_samples as f64
+        col / self.num_samples as f64
     }
 
     fn path_trace(&self, rng: &mut SmallRng, scene: &Scene, r: Ray, depth: u32) -> Colour {

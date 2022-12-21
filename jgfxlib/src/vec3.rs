@@ -4,7 +4,7 @@ use crate::{utils::{equal, is_zero, fmin}};
 
 use std::{ops};
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
