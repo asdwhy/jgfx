@@ -2,5 +2,4 @@
 members = [
     "render",
     "jgfxlib",
-    "sandbox"
 ]

@@ -14,6 +14,9 @@ use jgfxlib::renderer::Renderer;
 use rand::{SeedableRng, Rng};
 use rand::rngs::SmallRng;
 
+#[global_allocator]
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
 fn main() {
     let now = std::time::Instant::now();
     
@@ -21,7 +24,7 @@ fn main() {
     let aspect_ratio = 3.0/2.0;
     let image_width = 32 as u32;
     let image_height = (image_width  as f64 / aspect_ratio) as u32;
-    let samples_per_pixel = 1000;
+    let samples_per_pixel = 5000;
     let max_depth = 25;
 
     // World objects

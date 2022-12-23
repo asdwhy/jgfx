@@ -46,8 +46,7 @@ impl Renderer {
         let mut img = ImageBuffer::new(image_width, image_height);
 
         let f = |(_, cols): (u32, EnumeratePixelsMut<Rgb<u8>>)| {
-            let thread_rng = thread_rng();
-            let mut rng = SmallRng::from_rng(thread_rng).unwrap();    
+            let mut rng = SmallRng::from_rng(thread_rng()).unwrap();    
             
             cols.for_each(|(i, j, pixel): (u32, u32, &mut Rgb<u8>)| {
                 let j = image_height - j;
