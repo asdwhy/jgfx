@@ -1,6 +1,6 @@
 use rand::rngs::SmallRng;
 
-use crate::{point::Point3, vec3::Vec3, ray::Ray};
+use crate::{point3::Point3, vec3::Vec3, ray::Ray};
 
 #[allow(dead_code)]
 pub struct Camera {

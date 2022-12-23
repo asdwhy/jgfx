@@ -9,7 +9,7 @@ use jgfxlib::{camera::Camera};
 use jgfxlib::vec3::Vec3;
 use jgfxlib::hittables::sphere::Sphere;
 use jgfxlib::scene::Scene;
-use jgfxlib::point::Point3;
+use jgfxlib::point3::Point3;
 use jgfxlib::renderer::Renderer;
 use rand::{SeedableRng, Rng};
 use rand::rngs::SmallRng;
@@ -22,9 +22,9 @@ fn main() {
     
     // Image
     let aspect_ratio = 3.0/2.0;
-    let image_width = 32 as u32;
+    let image_width = 1200 as u32;
     let image_height = (image_width  as f64 / aspect_ratio) as u32;
-    let samples_per_pixel = 5000;
+    let samples_per_pixel = 1000;
     let max_depth = 25;
 
     // World objects
@@ -46,7 +46,7 @@ fn main() {
     let mut renderer = Renderer::new();
     renderer.set_num_samples(samples_per_pixel);
     renderer.set_depth(max_depth);
-    renderer.set_multithreading(false);
+    renderer.set_multithreading(true);
 
     let img = renderer.render(&scene, image_height, image_width);
 
@@ -70,7 +70,6 @@ fn build_scene() -> HittableList {
     world.add(Arc::new(sphere));
 
     let mut rng = SmallRng::from_entropy();    
-
 
     for a in -11..11 {
         for b in -11..11 {

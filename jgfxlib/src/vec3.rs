@@ -1,6 +1,4 @@
-use rand::{rngs::SmallRng, Rng};
-
-use crate::{utils::{equal, is_zero, fmin}};
+use crate::utils::{equal, is_zero, fmin};
 
 use std::{ops};
 
@@ -23,6 +21,18 @@ impl Vec3 {
         Self {
             x: 0.0, y: 0.0, z: 0.0
         }
+    }
+
+    /// Creates Vec3 (in cartesian coordinates) from spherical coordinates 
+    /// theta: (angle from y axis) in [0, 2PI]
+    /// azimuth: (angle from z axis) in [0, PI]
+    pub fn from_spherical(rho: f64, theta: f64, azimuth: f64) -> Self {
+        let az_sin = azimuth.sin();
+        Self::new(
+            rho * az_sin * theta.cos(),
+            rho * az_sin * theta.sin(),
+            rho * azimuth.cos()
+        )
     }
 
     pub fn length(&self) -> f64 {
@@ -51,49 +61,6 @@ impl Vec3 {
             x: self.x / len,
             y: self.y / len,
             z: self.z / len
-        }
-    }
-
-    
-    pub fn random(rng: &mut SmallRng) -> Vec3 {
-        Self::new(rng.gen(), rng.gen(), rng.gen())
-    }
-
-    pub fn random_in_range(rng: &mut SmallRng, min: f64, max: f64) -> Vec3 {
-        Self::new(rng.gen_range(min..max), rng.gen_range(min..max), rng.gen_range(min..max))
-    }
-
-    pub fn random_in_unit_sphere(rng: &mut SmallRng) -> Self {
-        loop {
-            let p = Self::random_in_range(rng, -1.0, 1.0);
-            if p.length_squared() >= 1.0 { continue; }
-
-            return p;
-        }
-    }
-
-    pub fn random_unit_vector(rng: &mut SmallRng) -> Self {
-        Self::random_in_unit_sphere(rng).normalized()
-    }
-
-    pub fn random_in_hemisphere(rng: &mut SmallRng, normal: &Self) -> Self {
-        let in_unit_sphere = Self::random_in_unit_sphere(rng);
-        if in_unit_sphere.dot(normal) > 0.0 {
-            in_unit_sphere
-        } else {
-            -in_unit_sphere
-        }
-    }
-
-    pub fn random_in_unit_disk(rng: &mut SmallRng) -> Self {
-        
-        loop {
-            let p = Self::new(rng.gen_range(-1.0..1.0), rng.gen_range(-1.0..1.0), 0.0);
-            if p.length_squared() >= 1.0 {
-                continue;
-            }
-
-            return p;
         }
     }
 

@@ -8,10 +8,8 @@ pub mod hittables;
 pub mod scene;
 pub mod renderer;
 pub mod materials;
-
-pub mod point {
-    pub type Point3 = crate::vec3::Vec3;
-}
+pub mod point3;
+pub mod random;
 
 #[cfg(test)]
 pub mod test;
