@@ -27,7 +27,7 @@ impl Material for Metal {
     fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
         let reflected_dir = ray_in.dir.normalized().reflect(&rec.n);
 
-        let scattered = Ray::new(rec.p.clone(), &reflected_dir + self.fuzzy*Vec3::random_in_unit_sphere(rng));
+        let scattered = Ray::new(rec.p.clone(), &reflected_dir + self.fuzzy*Vec3::random_in_unit_sphere(rng), ray_in.time);
         let attenuation = self.albedo.clone();
 
         if scattered.dir.dot(&rec.n) > 0.0 {

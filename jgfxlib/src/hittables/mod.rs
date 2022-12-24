@@ -1,6 +1,6 @@
-use std::sync::Arc;
+use std::{sync::Arc, ops::Range};
 
-use crate::{ray::Ray, point3::Point3, vec3::Vec3, materials::Material};
+use crate::{ray::Ray, point3::Point3, vec3::Vec3, materials::Material, aabb::AABB};
 
 pub struct HitRecord {
     pub p: Point3,
@@ -26,15 +26,15 @@ impl HitRecord {
         if !self.front_face { 
             self.n = - &self.n; 
         }
-
-        // self.n = if self.front_face { self.n } else { -self.n }
     }
 }
 
 pub trait Hittable: Send + Sync {
     fn intersect(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
+    fn bounding_box(&self, time: Range<f64>) -> Option<AABB>;
 }
-
 
 pub mod hittable_list;
 pub mod sphere;
+pub mod moving_sphere;
+pub mod bvh;

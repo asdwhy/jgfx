@@ -1,6 +1,6 @@
 use crate::utils::{equal, is_zero, fmin};
 
-use std::{ops};
+use std::{ops::{self, Index}};
 
 #[derive(Debug, Clone)]
 pub struct Vec3 {
@@ -319,5 +319,19 @@ impl std::cmp::PartialEq for Vec3 {
 impl Default for Vec3 {
     fn default() -> Self {
         Self::zero()
+    }
+}
+
+impl Index<i32> for Vec3 {
+    type Output = f64;
+
+    fn index(&self, index: i32) -> &Self::Output {
+        if index == 0 {
+            &self.x
+        } else if index == 1 {
+            &self.y
+        } else {
+            &self.z
+        }
     }
 }

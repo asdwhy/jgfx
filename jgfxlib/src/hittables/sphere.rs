@@ -1,5 +1,7 @@
+use std::ops::Range;
 use std::sync::Arc;
 
+use crate::aabb::AABB;
 use crate::materials::Material;
 use crate::vec3::Vec3;
 use crate::{point3::Point3};
@@ -63,6 +65,15 @@ impl Hittable for Sphere {
         rec.set_face_normal(r);
 
         Some(rec)
+    }
+
+    fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
+        Some(
+            AABB::new(
+                &self.origin - Vec3::new(self.radius, self.radius, self.radius),
+                &self.origin + Vec3::new(self.radius, self.radius, self.radius)
+            )
+        )
     }
 
 }

@@ -540,3 +540,12 @@ fn test_vec3_unary_neg() {
     assert_eq!(-TEST_VEC3.1, v3.y);
     assert_eq!(-TEST_VEC3.2, v3.z);
 }
+
+#[test]
+fn test_vec3_index() {
+    let ref v1 = Vec3::new(TEST_VEC.0, TEST_VEC.1, TEST_VEC.2);
+
+    assert_eq!(TEST_VEC.0, v1[0]);
+    assert_eq!(TEST_VEC.1, v1[1]);
+    assert_eq!(TEST_VEC.2, v1[2]);
+}

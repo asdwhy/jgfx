@@ -1,12 +1,13 @@
-use std::ops::Deref;
+use std::ops::{Deref, Range};
 use std::sync::Arc;
 
+use crate::aabb::{AABB, surrounding_box};
 use crate::ray::Ray;
 use crate::{hittables::Hittable};
 use crate::hittables::HitRecord;
 
 pub struct HittableList {
-    objects: Vec<Arc<dyn Hittable>>,
+    pub objects: Vec<Arc<dyn Hittable>>,
 }
 
 impl HittableList {
@@ -38,5 +39,27 @@ impl Hittable for HittableList {
         }
 
         ret
+    }
+
+    fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
+        if self.objects.is_empty() {
+            return None
+        }
+
+        let mut output_box: Option<AABB> = None;
+
+        for object in &self.objects {
+            match object.bounding_box(time.clone()) {
+                None => return None,
+                Some(the_box) => {
+                    output_box = match output_box {
+                        None => Some(the_box),
+                        Some(current_box) => Some(surrounding_box(current_box, the_box))
+                    };
+                }
+            }
+        }
+
+        output_box
     }
 }

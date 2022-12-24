@@ -1,7 +1,9 @@
 use std::{sync::Arc};
 
 use jgfxlib::colour::Colour;
+use jgfxlib::hittables::bvh::BvhNode;
 use jgfxlib::hittables::hittable_list::HittableList;
+use jgfxlib::hittables::moving_sphere::MovingSphere;
 use jgfxlib::materials::dialetric::Dialetric;
 use jgfxlib::materials::lambertian::{Lambertian};
 use jgfxlib::materials::metal::Metal;
@@ -21,8 +23,8 @@ fn main() {
     let now = std::time::Instant::now();
     
     // Image
-    let aspect_ratio = 3.0/2.0;
-    let image_width = 1200 as u32;
+    let aspect_ratio = 16.0/9.0;
+    let image_width = 32 as u32;
     let image_height = (image_width  as f64 / aspect_ratio) as u32;
     let samples_per_pixel = 1000;
     let max_depth = 25;
@@ -37,7 +39,7 @@ fn main() {
     let aperture = 0.1;
     let dist_to_focus = 10.0;
 
-    let cam = Camera::new(lookfrom, lookat, up, 20.0, aspect_ratio, aperture, dist_to_focus);
+    let cam = Camera::new(lookfrom, lookat, up, 20.0, aspect_ratio, aperture, dist_to_focus, 0.0..0.1);
 
     // Scene
     let scene = Scene::new(cam, objects);
@@ -46,7 +48,7 @@ fn main() {
     let mut renderer = Renderer::new();
     renderer.set_num_samples(samples_per_pixel);
     renderer.set_depth(max_depth);
-    renderer.set_multithreading(true);
+    renderer.set_multithreading(false);
 
     let img = renderer.render(&scene, image_height, image_width);
 
@@ -55,10 +57,7 @@ fn main() {
     println!("Writing to file...");
     
     img.save("image.png").unwrap();
-
-    // Sphere::ne
 }
-
 
 fn build_scene() -> HittableList {
     let mut world = HittableList::new();
@@ -69,7 +68,7 @@ fn build_scene() -> HittableList {
     sphere.set_radius(1000.0);
     world.add(Arc::new(sphere));
 
-    let mut rng = SmallRng::from_entropy();    
+    let mut rng = SmallRng::seed_from_u64(1232);    
 
     for a in -11..11 {
         for b in -11..11 {
@@ -84,9 +83,11 @@ fn build_scene() -> HittableList {
                     // diffuse
                     let albedo = Colour::random(&mut rng) * Colour::random(&mut rng);
                     let sphere_material = Arc::new(Lambertian::new(albedo));
-                    let mut sphere = Sphere::new(sphere_material);
-                    sphere.set_origin(center);
-                    sphere.set_radius(0.2);
+                    let center2 = &center + Vec3::new(0.0, rng.gen_range(0.0..0.5), 0.0);
+                    let sphere = MovingSphere::new(center, center2, 0.0..0.1, 0.2, sphere_material);
+                    // let mut sphere = Sphere::new(sphere_material);
+                    // sphere.set_origin(center);
+                    // sphere.set_radius(0.2);
                     world.add(Arc::new(sphere));
                 } else if choose_mat < 0.95 {
                     // metal
@@ -128,6 +129,11 @@ fn build_scene() -> HittableList {
     sphere.set_origin(Point3::new(4.0, 1.0, 0.0));
     sphere.set_radius(1.0);
     world.add(Arc::new(sphere));
-
     world
+
+    // let mut world2 = HittableList::new();
+    // let b = BvhNode::new(world, 0.0..1.0);
+    // world2.add(Arc::new(b));
+    
+    // world2
 }
