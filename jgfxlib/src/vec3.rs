@@ -1,8 +1,8 @@
 use crate::utils::{equal, is_zero, fmin};
 
-use std::{ops::{self, Index}};
+use std::{ops::{self, Index, IndexMut}};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
@@ -13,6 +13,15 @@ impl Vec3 {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self {
             x, y, z
+        }
+    }
+
+    /// Creates a new Vec3, with all three dimensions set to passed value
+    pub fn from_value(val: f64) -> Self {
+        Self {
+            x: val,
+            y: val,
+            z: val
         }
     }
 
@@ -332,6 +341,18 @@ impl Index<i32> for Vec3 {
             &self.y
         } else {
             &self.z
+        }
+    }
+}
+
+impl IndexMut<i32> for Vec3 {    
+    fn index_mut(&mut self, index: i32) -> &mut Self::Output {
+        if index == 0 {
+            &mut self.x
+        } else if index == 1 {
+            &mut self.y
+        } else {
+            &mut self.z
         }
     }
 }

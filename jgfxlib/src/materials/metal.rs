@@ -7,13 +7,13 @@ use crate::colour::Colour;
 use crate::utils::{fmin};
 use crate::vec3::Vec3;
 
-/// Metal (reflective) material
 pub struct Metal {
     albedo: Colour,
     fuzzy: f64
 }
 
 impl Metal {
+    /// Creates a metal (reflective) material
     pub fn new(albedo: Colour, fuzzy: f64) -> Self {
         Self {
             albedo,

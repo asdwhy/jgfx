@@ -4,7 +4,7 @@ use rand::{rngs::SmallRng, Rng};
 
 use crate::{point3::Point3, vec3::Vec3, ray::Ray};
 
-#[allow(dead_code)]
+#[allow(unused)]
 pub struct Camera {
     aspect_ratio: f64,
     origin: Point3,
@@ -56,14 +56,22 @@ impl Camera {
     }
 
     pub fn get_ray(&self, rng: &mut SmallRng, s: f64, t: f64) -> Ray {
-        let rd = self.lens_radius * Vec3::random_in_unit_disk(rng);
-        let offset = &self.u * rd.x + &self.v * rd.y;
+        let origin: Point3;
+        let dir: Vec3;
+        
+        if self.lens_radius == 0.0 { // pinhole camera => everything is in focus
+            origin = self.origin.clone();
+            dir = &self.lower_left_corner + s * &self.horizontal + t * &self.vertical - &self.origin;
+        } else {
+            let rd = self.lens_radius * Vec3::random_in_unit_disk(rng);
+            let offset = &self.u * rd.x + &self.v * rd.y;
+
+            origin = &self.origin + &offset;
+            dir = &self.lower_left_corner + s * &self.horizontal + t * &self.vertical - &self.origin - &offset;
+        }
+        
         let ray_time = if self.time.is_empty() { 0.0 } else { rng.gen_range(self.time.clone()) };
 
-        Ray::new(
-            &self.origin + &offset,
-            &self.lower_left_corner + s * &self.horizontal + t * &self.vertical - &self.origin - &offset,
-            ray_time
-        )
+        Ray::new(origin, dir, ray_time)
     }
 }

@@ -1,9 +1,11 @@
 use std::{ops::Range, cmp::Ordering};
 use std::sync::Arc;
 
+use rand::rngs::SmallRng;
+
 use crate::aabb::surrounding_box;
 use crate::utils::sort_from;
-use crate::{hittables::{Hittable, HitRecord}, aabb::AABB, random::random_int};
+use crate::{hittables::{Hittable, HitRecord}, aabb::AABB, random::random_i32};
 use crate::hittables::hittable_list::HittableList;
 use crate::ray::Ray;
 
@@ -23,7 +25,7 @@ impl BvhNode {
     fn from_indexes(src_objects: &mut Vec<Arc<dyn Hittable>>, start: usize, end: usize, time: Range<f64>) -> Self {
         let mut objects = src_objects;
 
-        let axis = random_int(0..3);
+        let axis = random_i32(0..3);
 
         let comparator = |a: &Arc<dyn Hittable>, b: &Arc<dyn Hittable>| -> bool {
             let box_a = a.bounding_box(0.0..0.0); // I know this looks wrong but its right!
@@ -85,16 +87,16 @@ impl BvhNode {
 
 
 impl Hittable for BvhNode {
-    fn intersect(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         if !self.bounding_box.intersect(r, t_min, t_max) {
             return None;
         }
 
-        let hit_left = self.left.intersect(r, t_min, t_max);
+        let hit_left = self.left.intersect(rng, r, t_min, t_max);
 
         let hit_right = match &hit_left {
-            None => self.right.intersect(r, t_min, t_max),
-            Some(rec) => self.right.intersect(r, t_min, rec.t)
+            None => self.right.intersect(rng, r, t_min, t_max),
+            Some(rec) => self.right.intersect(rng, r, t_min, rec.t)
         };
 
         let hl = hit_left.is_some();

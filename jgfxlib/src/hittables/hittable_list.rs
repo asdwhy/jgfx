@@ -1,5 +1,7 @@
-use std::ops::{Deref, Range};
+use std::ops::{Range};
 use std::sync::Arc;
+
+use rand::rngs::SmallRng;
 
 use crate::aabb::{AABB, surrounding_box};
 use crate::ray::Ray;
@@ -27,12 +29,12 @@ impl HittableList {
 }
 
 impl Hittable for HittableList {
-    fn intersect(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut ret: Option<HitRecord> = None;
         let mut closest_t = t_max;
 
         for obj in self.objects.iter() {
-            if let Some(rec) = obj.deref().intersect(r, t_min, closest_t) {
+            if let Some(rec) = obj.intersect(rng, r, t_min, closest_t) {
                 closest_t = rec.t;
                 ret = Some(rec);
             }

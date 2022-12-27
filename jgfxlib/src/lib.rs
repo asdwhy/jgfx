@@ -6,6 +6,7 @@ pub mod scene;
 pub mod renderer;
 pub mod materials;
 pub mod point3;
+pub mod textures;
 mod random;
 mod aabb;
 mod constants;

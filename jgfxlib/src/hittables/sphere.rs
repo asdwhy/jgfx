@@ -1,5 +1,8 @@
+use std::f64::consts::PI;
 use std::ops::Range;
 use std::sync::Arc;
+
+use rand::rngs::SmallRng;
 
 use crate::aabb::AABB;
 use crate::materials::Material;
@@ -16,10 +19,9 @@ pub struct Sphere {
 }
 
 impl Sphere {
-    pub fn new(material: Arc<dyn Material>) -> Self where Self: Sized {
+    pub fn new(origin: Point3, radius: f64, material: Arc<dyn Material>) -> Self where Self: Sized {
         Self {
-            origin: Vec3::zero(),
-            radius: 1.0,
+            origin, radius,
             material: material.clone()
         }
     }
@@ -34,7 +36,7 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    fn intersect(&self, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = &r.origin - &self.origin;
         let a = r.dir.length_squared();
         let half_b = oc.dot(&r.dir);
@@ -60,8 +62,9 @@ impl Hittable for Sphere {
         let t = root;
         let p = r.at(root);
         let n = (&p - &self.origin) / self.radius;
+        let uv = get_sphere_uv(&n);
 
-        let mut rec = HitRecord::new(t, p, n, &self.material);
+        let mut rec = HitRecord::new(t, p, n, &self.material, uv.0, uv.1);
         rec.set_face_normal(r);
 
         Some(rec)
@@ -76,4 +79,22 @@ impl Hittable for Sphere {
         )
     }
 
+}
+
+
+/// p: given a point on the unit sphere
+/// returns (u,v): texture coordinates
+/// u: returned value in [0,1] of angle around the Y axis from x=-1
+/// v: returned value in [0,1] of angle from y=-1 to y=+1
+///     <1 0 0> yields <0.50 0.50>       <-1  0  0> yields <0.00 0.50>
+///     <0 1 0> yields <0.50 1.00>       < 0 -1  0> yields <0.50 0.00>
+///     <0 0 1> yields <0.25 0.50>       < 0  0 -1> yields <0.75 0.50>
+fn get_sphere_uv(p: &Point3) -> (f64, f64) {
+    // uses spherical coordinates where theta is angle up from -y axis in 0..PI
+    // and phi is angle around Y axis (from -X to +Z to +X to -Z to -X)
+    
+    let theta = (-p.y).acos();
+    let phi = (-p.z).atan2(p.x) + PI;
+
+    (phi / (2.0*PI), theta / PI)
 }

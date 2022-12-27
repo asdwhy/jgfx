@@ -1,9 +1,13 @@
+use std::sync::Arc;
+
 use rand::rngs::SmallRng;
 
 use crate::hittables::HitRecord;
 use crate::materials::Material;
 use crate::ray::Ray;
 use crate::colour::Colour;
+use crate::textures::Texture;
+use crate::textures::solid_colour::SolidColour;
 use crate::vec3::Vec3;
 
 
@@ -15,17 +19,23 @@ pub enum DiffuseMethod {
     CosHemisphere
 }
 
-
-/// Lambertian (diffuse) material
 pub struct Lambertian {
-    albedo: Colour,
+    albedo: Arc<dyn Texture>,
     diffuse_method: DiffuseMethod
 }
 
 impl Lambertian {
+    /// Creates a Lambertian (diffused) material from a colour
     pub fn new(albedo: Colour) -> Self {
         Self {
-            albedo,
+            albedo: Arc::new(SolidColour::from_rgb(albedo.x, albedo.y, albedo.z)),
+            diffuse_method: DiffuseMethod::default()
+        }
+    }
+
+    pub fn from_texture(albedo: Arc<dyn Texture>) -> Self {
+        Self {
+            albedo: albedo.clone(),
             diffuse_method: DiffuseMethod::default()
         }
     }
@@ -58,8 +68,9 @@ impl Material for Lambertian {
         }
 
         let scattered = Ray::new(rec.p.clone(), scatter_direction, ray_in.time);
-        
-        Some((self.albedo.clone(), scattered))
+        let attenuation = self.albedo.value(rec.u, rec.v, &rec.p);
+
+        Some((attenuation, scattered))
     }
 }
 

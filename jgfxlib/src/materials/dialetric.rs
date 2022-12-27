@@ -7,12 +7,12 @@ use crate::ray::Ray;
 use crate::colour::Colour;
 use crate::utils::fmin;
 
-/// Dialetric (refractive) material
 pub struct Dialetric {
     ir: f64 // index of refraction
 }
 
 impl Dialetric {
+    /// Creates a dialetric (refractive/transmissive) material
     pub fn new(index_of_refraction: f64) -> Self {
         Self {
             ir: index_of_refraction
