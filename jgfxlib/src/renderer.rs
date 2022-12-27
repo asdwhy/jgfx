@@ -14,7 +14,7 @@ use crate::colour::{Colour};
 pub struct Renderer {
     num_samples: u32,
     depth: u32,
-    multithreading: bool,
+    multithreading: bool
 }
 
 impl Renderer {
@@ -22,7 +22,7 @@ impl Renderer {
         Self {
             num_samples: 10,
             depth: 10,
-            multithreading: false,
+            multithreading: false
         }
     }
 
@@ -33,13 +33,13 @@ impl Renderer {
     }
 
     /// Set the recursion depth
-    pub fn set_depth(&mut self, val: u32) {
-        self.depth = max(1, val);
+    pub fn set_depth(&mut self, depth: u32) {
+        self.depth = max(1, depth);
     }
 
     /// Allow this render to be multithreaded
-    pub fn set_multithreading(&mut self, val: bool) {
-        self.multithreading = val;
+    pub fn set_multithreading(&mut self, multithreading: bool) {
+        self.multithreading = multithreading;
     }
 
     pub fn render(&mut self, scene: &Scene, image_height: u32, image_width: u32) -> RgbImage {
@@ -88,22 +88,20 @@ impl Renderer {
             return Colour::zero();
         }
 
-        let hit = scene.objects.intersect(&r, EPSILON, INFINITY);
+        let hit = scene.objects.intersect(rng, &r, EPSILON, INFINITY);
 
         match hit {
             None => {
-                let unit_dir = r.dir.normalized();
-    
-                let t = 0.5 * (unit_dir.y + 1.0);
-                
-                (1.0 - t) * Colour::new(1.0,1.0,1.0) + t*Colour::new(0.5, 0.7, 1.0)
+                scene.background_colour
             },
             Some(rec) => {
+                let emitted = rec.material.emitted(rec.u, rec.v, &rec.p);
+
                 match rec.material.scatter(rng, r, &rec) {
                     Some((attenuation, scattered)) => {
-                        attenuation * self.path_trace(rng, scene, scattered, depth - 1)
+                        emitted + attenuation * self.path_trace(rng, scene, scattered, depth - 1)
                     },
-                    None => Colour::zero()
+                    None => emitted // if light doesnt scatter off this object, return the light emitted from it
                 }
             }
         }

@@ -1,46 +1,117 @@
-use std::{sync::Arc};
+mod scenes;
 
 use jgfxlib::colour::Colour;
-use jgfxlib::hittables::hittable_list::HittableList;
-use jgfxlib::materials::dialetric::Dialetric;
-use jgfxlib::materials::lambertian::{Lambertian};
-use jgfxlib::materials::metal::Metal;
+use jgfxlib::hittables::hittable_list::{HittableList};
 use jgfxlib::{camera::Camera};
 use jgfxlib::vec3::Vec3;
-use jgfxlib::hittables::sphere::Sphere;
-use jgfxlib::scene::Scene;
+use jgfxlib::scene::{Scene};
 use jgfxlib::point3::Point3;
 use jgfxlib::renderer::Renderer;
-use rand::{SeedableRng, Rng};
-use rand::rngs::SmallRng;
 
 #[global_allocator]
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 fn main() {
     let now = std::time::Instant::now();
-    
+
     // Image
-    let aspect_ratio = 3.0/2.0;
-    let image_width = 1200 as u32;
-    let image_height = (image_width  as f64 / aspect_ratio) as u32;
-    let samples_per_pixel = 1000;
+    let mut aspect_ratio = 16.0/9.0;
+    let mut image_width = 400 as u32;
+    let mut samples_per_pixel = 10000;
     let max_depth = 25;
 
-    // World objects
-    let objects = build_scene();
+    // World
+    let world: HittableList;
+    let lookfrom: Point3;
+    let lookat: Point3;
+    let vfov: f64;
+    let mut aperture: f64 = 0.0;
+    let mut background_colour: Colour = Colour::new(0.7, 0.8, 1.0);
+    let mut time = 0.0..0.0;
 
-    // Camera
-    let lookfrom = Vec3::new(13.0, 2.0, 3.0);
-    let lookat = Vec3::new(0.0,0.0,0.0);
-    let up = Vec3::new(0.0,1.0,0.0);
-    let aperture = 0.1;
+    let scene_num = 8;
+
+    match scene_num {
+        1 => {
+            world = scenes::random_scene::build_scene();
+            lookfrom = Point3::new(13.0, 2.0, 3.0);
+            lookat = Point3::zero();
+            vfov = 20.0;
+            aperture = 0.1;
+            time = 0.0..1.0;
+        },
+        2 => {
+            world = scenes::two_spheres::build_scene();
+            lookfrom = Point3::new(13.0, 2.0, 3.0);
+            lookat = Point3::zero();
+            vfov = 20.0;
+        },
+        3 => {
+            world = scenes::two_perlin_spheres::build_scene();
+            lookfrom = Point3::new(13.0, 2.0, 3.0);
+            lookat = Point3::zero();
+            vfov = 20.0;
+        },
+        4 => {
+            world = scenes::earth::build_scene();
+            lookfrom = Point3::new(13.0, 2.0, 3.0);
+            lookat = Point3::zero();
+            vfov = 20.0;
+        },
+        5 => {
+            world = scenes::simple_light::build_scene();
+            lookfrom = Point3::new(26.0, 3.0, 6.0);
+            lookat = Point3::new(0.0, 2.0, 0.0);
+            vfov = 20.0;
+            background_colour = Colour::zero();
+        },
+        6 => {
+            world = scenes::cornell_box::build_scene();
+            aspect_ratio = 1.0;
+            image_width = 400;
+            samples_per_pixel = 200;
+            background_colour = Colour::zero();
+
+            lookfrom = Point3::new(278.0, 278.0, -800.0);
+            lookat = Point3::new(278.0, 278.0, 0.0);
+            vfov = 40.0;
+        },
+        7 => {
+            world = scenes::cornell_smoke::build_scene();
+            aspect_ratio = 1.0;
+            image_width = 1024;
+            samples_per_pixel = 5000;
+            background_colour = Colour::zero();
+
+            lookfrom = Point3::new(278.0, 278.0, -800.0);
+            lookat = Point3::new(278.0, 278.0, 0.0);
+            vfov = 40.0;
+        },
+        8 => {
+            world = scenes::final_scene::build_scene();
+            aspect_ratio = 1.0;
+            image_width = 1024;
+            samples_per_pixel = 10000;
+            background_colour = Colour::zero();
+            time = 0.0..1.0;
+            lookfrom = Point3::new(478.0, 278.0, -600.0);
+            lookat = Point3::new(278.0, 278.0, 0.0);
+            vfov = 40.0;
+        },
+        _ => {
+            world = HittableList::new();
+            lookfrom = Point3::new(13.0, 2.0, 3.0);
+            lookat = Point3::zero();
+            vfov = 20.0;
+            background_colour = Colour::zero();
+        }
+    }
+
+    let vup = Vec3::new(0.0,1.0,0.0);
     let dist_to_focus = 10.0;
-
-    let cam = Camera::new(lookfrom, lookat, up, 20.0, aspect_ratio, aperture, dist_to_focus);
-
-    // Scene
-    let scene = Scene::new(cam, objects);
+    
+    let cam = Camera::new(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, time);
+    let scene = Scene::new(cam, world, background_colour);
 
     // Render
     let mut renderer = Renderer::new();
@@ -48,86 +119,11 @@ fn main() {
     renderer.set_depth(max_depth);
     renderer.set_multithreading(true);
 
-    let img = renderer.render(&scene, image_height, image_width);
+    let img = renderer.render(&scene, (image_width  as f64 / aspect_ratio) as u32, image_width);
 
     println!("Finished in {}", now.elapsed().as_secs_f64());
     
     println!("Writing to file...");
     
     img.save("image.png").unwrap();
-
-    // Sphere::ne
-}
-
-
-fn build_scene() -> HittableList {
-    let mut world = HittableList::new();
-
-    let ground_material = Arc::new(Lambertian::new(Colour::new(0.5,0.5,0.5)));
-    let mut sphere = Sphere::new(ground_material);
-    sphere.set_origin(Vec3::new(0.0, -1000.0, 0.0));
-    sphere.set_radius(1000.0);
-    world.add(Arc::new(sphere));
-
-    let mut rng = SmallRng::from_entropy();    
-
-    for a in -11..11 {
-        for b in -11..11 {
-            let a = a as f64;
-            let b = b as f64;
-
-            let choose_mat = rng.gen::<f64>();
-            let center = Point3::new(a + 0.9 * rng.gen::<f64>(), 0.2, b + 0.9 * rng.gen::<f64>());
-
-            if (center.clone() - Point3::new(4.0, 0.2, 0.0)).length() > 0.9 {
-                if choose_mat < 0.8 {
-                    // diffuse
-                    let albedo = Colour::random(&mut rng) * Colour::random(&mut rng);
-                    let sphere_material = Arc::new(Lambertian::new(albedo));
-                    let mut sphere = Sphere::new(sphere_material);
-                    sphere.set_origin(center);
-                    sphere.set_radius(0.2);
-                    world.add(Arc::new(sphere));
-                } else if choose_mat < 0.95 {
-                    // metal
-                    let albedo = Colour::random_in_range(&mut rng, 0.5, 1.0);
-                    let fuzz = rng.gen_range(0.0..0.5); 
-
-                    let sphere_material = Arc::new(Metal::new(albedo, fuzz));
-                    let mut sphere = Sphere::new(sphere_material);
-                    sphere.set_origin(center);
-                    sphere.set_radius(0.2);
-                    world.add(Arc::new(sphere));
-                } else {
-                    // glass
-                    let sphere_material = Arc::new(Dialetric::new(1.5));
-                    let mut sphere = Sphere::new(sphere_material);
-                    sphere.set_origin(center);
-                    sphere.set_radius(0.2);
-                    world.add(Arc::new(sphere));
-                }
-            }
-        }
-    }
-
-
-    let material = Arc::new(Dialetric::new(1.5));
-    let mut sphere = Sphere::new(material);
-    sphere.set_origin(Point3::new(0.0, 1.0, 0.0));
-    sphere.set_radius(1.0);
-    world.add(Arc::new(sphere));
-
-    let material = Arc::new(Lambertian::new(Colour::new(0.4, 0.2, 0.1)));
-    let mut sphere = Sphere::new(material);
-    sphere.set_origin(Point3::new(-4.0, 1.0, 0.0));
-    sphere.set_radius(1.0);
-    world.add(Arc::new(sphere));
-
-    let material = Arc::new(Metal::new(Colour::new(0.7, 0.6, 0.5), 0.0));
-    let mut sphere = Sphere::new(material);
-    sphere.set_origin(Point3::new(4.0, 1.0, 0.0));
-    sphere.set_radius(1.0);
-    world.add(Arc::new(sphere));
-
-    world
 }

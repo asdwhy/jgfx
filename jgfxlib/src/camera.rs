@@ -1,22 +1,32 @@
-use rand::rngs::SmallRng;
+use std::ops::Range;
+
+use rand::{rngs::SmallRng, Rng};
 
 use crate::{point3::Point3, vec3::Vec3, ray::Ray};
 
-#[allow(dead_code)]
+#[allow(unused)]
 pub struct Camera {
     aspect_ratio: f64,
     origin: Point3,
     horizontal: Vec3,
     vertical: Vec3,
-    lower_left_corner: Vec3,
-    u: Vec3,
-    v: Vec3,
-    w: Vec3,
-    lens_radius: f64
+    lower_left_corner: Vec3,        // for generating rays
+    u: Vec3, v: Vec3, w: Vec3,      // camera coordinate frame
+    lens_radius: f64,               // for depth of field
+    time: Range<f64>,               // shutter open close times for motion blur
 }
 
 impl Camera {
-    pub fn new(lookfrom: Vec3, lookat: Vec3, up: Vec3, vfov: f64, aspect_ratio: f64, aperture: f64, focus_distance: f64) -> Self {
+    pub fn new(
+        lookfrom: Vec3, 
+        lookat: Vec3, 
+        up: Vec3, 
+        vfov: f64, 
+        aspect_ratio: f64, 
+        aperture: f64, 
+        focus_distance: f64,
+        time: Range<f64>
+    ) -> Self {
         let theta = vfov.to_radians();
         let h = (theta/2.0).tan();
         let viewport_height = 2.0 * h;
@@ -40,17 +50,28 @@ impl Camera {
             vertical,
             u, v, w,
             lower_left_corner,
-            lens_radius
+            lens_radius,
+            time
         }
     }
 
     pub fn get_ray(&self, rng: &mut SmallRng, s: f64, t: f64) -> Ray {
-        let rd = self.lens_radius * Vec3::random_in_unit_disk(rng);
-        let offset = &self.u * rd.x + &self.v * rd.y;
+        let origin: Point3;
+        let dir: Vec3;
+        
+        if self.lens_radius == 0.0 { // pinhole camera => everything is in focus
+            origin = self.origin.clone();
+            dir = &self.lower_left_corner + s * &self.horizontal + t * &self.vertical - &self.origin;
+        } else {
+            let rd = self.lens_radius * Vec3::random_in_unit_disk(rng);
+            let offset = &self.u * rd.x + &self.v * rd.y;
 
-        Ray::new(
-            &self.origin + &offset, 
-            &self.lower_left_corner + s * &self.horizontal + t * &self.vertical - &self.origin - &offset
-        )
+            origin = &self.origin + &offset;
+            dir = &self.lower_left_corner + s * &self.horizontal + t * &self.vertical - &self.origin - &offset;
+        }
+        
+        let ray_time = if self.time.is_empty() { 0.0 } else { rng.gen_range(self.time.clone()) };
+
+        Ray::new(origin, dir, ray_time)
     }
 }

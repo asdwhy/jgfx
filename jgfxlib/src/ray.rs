@@ -3,14 +3,16 @@ use crate::{point3::Point3, vec3::Vec3};
 
 pub struct Ray {
     pub origin: Point3,
-    pub dir: Vec3
+    pub dir: Vec3,
+    pub time: f64
 }
 
 impl Ray {
-    pub fn new(orig: Point3, dir: Vec3) -> Self {
+    pub fn new(origin: Point3, dir: Vec3, time: f64) -> Self {
         Self {
-            origin: orig,
-            dir: dir
+            origin,
+            dir,
+            time
         }
     }
 

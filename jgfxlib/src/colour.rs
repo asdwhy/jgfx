@@ -5,6 +5,10 @@ use crate::{vec3::Vec3, utils::clamp};
 pub type Colour = Vec3;
 
 impl Colour {
+    pub fn from_rgb(r: f64, g: f64, b: f64) -> Self {
+        Self::new(r, g, b)
+    }
+
     pub fn to_rgb(&self) -> Rgb<u8> {
         let mut r = self.x;
         let mut g = self.y;
