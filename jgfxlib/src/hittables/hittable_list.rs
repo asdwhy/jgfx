@@ -1,10 +1,13 @@
 use std::ops::{Range};
 use std::sync::Arc;
 
+use rand::Rng;
 use rand::rngs::SmallRng;
 
 use crate::aabb::{AABB, surrounding_box};
+use crate::point3::Point3;
 use crate::ray::Ray;
+use crate::vec3::Vec3;
 use crate::{hittables::Hittable};
 use crate::hittables::HitRecord;
 
@@ -63,5 +66,22 @@ impl Hittable for HittableList {
         }
 
         output_box
+    }
+
+    fn pdf_value(&self, rng: &mut SmallRng, o: &Point3, v: &Vec3) -> f64 {
+        let weight = 1.0 / self.objects.len() as f64;
+        let mut sum = 0.0;
+
+        for obj in self.objects.iter() {
+            sum += weight * obj.pdf_value(rng, o, v);
+        }
+
+        sum
+    }
+
+    fn random(&self, rng: &mut SmallRng, o: &Point3) -> Vec3 {
+        let i = rng.gen_range(0..self.objects.len());
+
+        self.objects.get(i).unwrap().random(rng, o)
     }
 }

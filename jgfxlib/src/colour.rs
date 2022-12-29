@@ -14,6 +14,10 @@ impl Colour {
         let mut g = self.y;
         let mut b = self.z;
 
+        if r.is_nan() { r = 0.0; };
+        if g.is_nan() { g = 0.0; };
+        if b.is_nan() { b = 0.0; };
+
         r = r.sqrt();
         g = g.sqrt();
         b = b.sqrt();

@@ -2,9 +2,9 @@ use std::sync::Arc;
 
 use rand::rngs::SmallRng;
 
-use crate::{textures::{Texture, solid_colour::SolidColour}, colour::Colour, ray::Ray, hittables::HitRecord, point3::Point3};
+use crate::{textures::{Texture, solid_colour::SolidColour}, colour::Colour, ray::Ray, hittables::HitRecord};
 
-use super::Material;
+use super::{Material, ScatterRecord};
 
 
 pub struct DiffuseLight {
@@ -28,12 +28,16 @@ impl DiffuseLight {
 
 impl Material for DiffuseLight {
     // This light doesn't scatter light
-    fn scatter(&self, _: &mut SmallRng, _: Ray, _: &HitRecord) -> Option<(Colour, Ray)> {
+    fn scatter(&self, _: &mut SmallRng, _: &Ray, _: &HitRecord) -> Option<ScatterRecord> {
         None
     }
 
     // This light emits light based on its texture
-    fn emitted(&self, u: f64, v: f64, p: &Point3) -> Colour {
-        self.emit.value(u, v, p)
+    fn emitted(&self, _: &Ray, rec: &HitRecord) -> Colour {
+        if rec.front_face { // only emit light from the front facing side
+            self.emit.value(rec.u, rec.v, &rec.p)
+        } else {
+            Colour::zero()
+        }
     }
 }

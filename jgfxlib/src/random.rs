@@ -1,4 +1,4 @@
-use std::ops::Range;
+use std::{ops::Range, f64::consts::PI};
 
 /// Utilities involving randomness
 use rand::{rngs::SmallRng, Rng, SeedableRng, thread_rng};
@@ -50,6 +50,31 @@ impl Vec3 {
 
             return p;
         }
+    }
+
+    pub fn random_cosine_direction(rng: &mut SmallRng) -> Vec3 {
+        let r1 = rng.gen::<f64>();
+        let r2 = rng.gen::<f64>();
+        let z = (1.0-r2).sqrt();
+
+        let phi = 2.0*PI*r1;
+        let x = phi.cos() * r2.sqrt();
+        let y = phi.sin() * r2.sqrt();
+
+        Vec3::new(x, y, z)
+    }
+
+    pub fn random_to_sphere(rng: &mut SmallRng, radius: f64, distance_squared: f64) -> Vec3 {
+        let r1 = rng.gen::<f64>();
+        let r2 = rng.gen::<f64>();
+
+        let z = 1.0 + r2*((1.0-(radius*radius/distance_squared)).sqrt() - 1.0);
+
+        let phi = 2.0 * PI * r1;
+        let x = phi.cos()*((1.0-z*z).sqrt());
+        let y = phi.sin()*((1.0-z*z).sqrt());
+
+        Vec3::new(x, y, z)
     }
 }
 

@@ -7,6 +7,8 @@ use crate::colour::Colour;
 use crate::utils::{fmin};
 use crate::vec3::Vec3;
 
+use super::ScatterRecord;
+
 pub struct Metal {
     albedo: Colour,
     fuzzy: f64
@@ -24,16 +26,14 @@ impl Metal {
 
 impl Material for Metal {
     // Returns (attenuation, scattered_ray) as an option
-    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
-        let reflected_dir = ray_in.dir.normalized().reflect(&rec.n);
+    fn scatter(&self, rng: &mut SmallRng, ray_in: &Ray, rec: &HitRecord) -> Option<ScatterRecord> {
+        let reflected = ray_in.dir.normalized().reflect(&rec.n);
 
-        let scattered = Ray::new(rec.p.clone(), &reflected_dir + self.fuzzy*Vec3::random_in_unit_sphere(rng), ray_in.time);
+        let specular_ray = Ray::new(rec.p, reflected + self.fuzzy*Vec3::random_in_unit_sphere(rng), ray_in.time);
         let attenuation = self.albedo.clone();
 
-        if scattered.dir.dot(&rec.n) > 0.0 {
-            Some((attenuation, scattered))
-        } else {
-            None
-        }
+        let srec = ScatterRecord::new(Some(specular_ray), attenuation, None);
+
+        Some(srec)        
     }
 }

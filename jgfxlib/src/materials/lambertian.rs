@@ -1,76 +1,52 @@
+use std::f64::consts::PI;
 use std::sync::Arc;
 
 use rand::rngs::SmallRng;
 
 use crate::hittables::HitRecord;
 use crate::materials::Material;
+use crate::pdfs::cosine_pdf::CosinePdf;
 use crate::ray::Ray;
 use crate::colour::Colour;
 use crate::textures::Texture;
 use crate::textures::solid_colour::SolidColour;
-use crate::vec3::Vec3;
 
-
-#[derive(Default)]
-pub enum DiffuseMethod {
-    CosCubed,
-    CosSphere,
-    #[default]
-    CosHemisphere
-}
+use super::ScatterRecord;
 
 pub struct Lambertian {
-    albedo: Arc<dyn Texture>,
-    diffuse_method: DiffuseMethod
+    albedo: Arc<dyn Texture>
 }
 
 impl Lambertian {
     /// Creates a Lambertian (diffused) material from a colour
     pub fn new(albedo: Colour) -> Self {
         Self {
-            albedo: Arc::new(SolidColour::from_rgb(albedo.x, albedo.y, albedo.z)),
-            diffuse_method: DiffuseMethod::default()
+            albedo: Arc::new(SolidColour::new(albedo))
         }
     }
 
     pub fn from_texture(albedo: Arc<dyn Texture>) -> Self {
         Self {
-            albedo: albedo.clone(),
-            diffuse_method: DiffuseMethod::default()
+            albedo: albedo.clone()
         }
     }
-
-    /// Set the method this image will implement diffuse
-    pub fn set_diffuse_method(&mut self, method: DiffuseMethod) {
-        self.diffuse_method = method;
-    }
-
-    // fn diffuse_direction(&self, rec: &HitRecord) -> Ray {
-    //     let target = match self.diffuse_method {
-    //         DiffuseMethod::CosCubed => &rec.p + &rec.n + Vec3::random_in_unit_sphere(),
-    //         DiffuseMethod::CosSphere => &rec.p + &rec.n + Vec3::random_unit_vector(),
-    //         DiffuseMethod::CosHemisphere => &rec.p + Vec3::random_in_hemisphere(&rec.n),
-    //     };
-
-    //     // 0=p, 1=n
-    //     Ray::new(&rec.p, &(&target - &rec.p))
-    // }
 }
 
 impl Material for Lambertian {
     // Returns (attenuation, scattered_ray) as an option
-    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
-        let mut scatter_direction = &rec.n + Vec3::random_unit_vector(rng);
-
-        // catch near 0 direction
-        if scatter_direction.near_zero() {
-            scatter_direction = rec.n.clone();
-        }
-
-        let scattered = Ray::new(rec.p.clone(), scatter_direction, ray_in.time);
+    fn scatter(&self, _: &mut SmallRng, _: &Ray, rec: &HitRecord) -> Option<ScatterRecord> {
         let attenuation = self.albedo.value(rec.u, rec.v, &rec.p);
+        let pdf = CosinePdf::new(&rec.n);
 
-        Some((attenuation, scattered))
+        let srec = ScatterRecord::new(None, attenuation, Some(Arc::new(pdf)));
+
+        Some(srec)
+    }
+
+    fn scaterring_pdf(&self, _: &mut SmallRng, _: &Ray, rec: &HitRecord, scattered: &Ray) -> f64 {
+        let cosine = rec.n.dot(&scattered.dir.normalized());
+
+        if cosine < 0.0 { 0.0 } else { cosine / PI }
     }
 }
 

@@ -1,7 +1,12 @@
 mod scenes;
 
+use std::sync::Arc;
+
 use jgfxlib::colour::Colour;
+use jgfxlib::hittables::aa_rectangles::xz_rect::XzRectangle;
 use jgfxlib::hittables::hittable_list::{HittableList};
+use jgfxlib::hittables::sphere::Sphere;
+use jgfxlib::materials::diffuse_light::DiffuseLight;
 use jgfxlib::{camera::Camera};
 use jgfxlib::vec3::Vec3;
 use jgfxlib::scene::{Scene};
@@ -15,103 +20,36 @@ fn main() {
     let now = std::time::Instant::now();
 
     // Image
-    let mut aspect_ratio = 16.0/9.0;
-    let mut image_width = 400 as u32;
-    let mut samples_per_pixel = 10000;
-    let max_depth = 25;
+    let aspect_ratio = 1.0;
+    let image_width = 600 as u32;
+    let samples_per_pixel = 1000;
+    let max_depth = 30;
 
     // World
     let world: HittableList;
     let lookfrom: Point3;
     let lookat: Point3;
     let vfov: f64;
-    let mut aperture: f64 = 0.0;
-    let mut background_colour: Colour = Colour::new(0.7, 0.8, 1.0);
-    let mut time = 0.0..0.0;
+    let aperture: f64 = 0.0;
+    let background_colour: Colour = Colour::zero();
+    let time = 0.0..0.0;
 
-    let scene_num = 8;
+    world = scenes::cornell_box::build_scene();
+    let mut lights = HittableList::new();
 
-    match scene_num {
-        1 => {
-            world = scenes::random_scene::build_scene();
-            lookfrom = Point3::new(13.0, 2.0, 3.0);
-            lookat = Point3::zero();
-            vfov = 20.0;
-            aperture = 0.1;
-            time = 0.0..1.0;
-        },
-        2 => {
-            world = scenes::two_spheres::build_scene();
-            lookfrom = Point3::new(13.0, 2.0, 3.0);
-            lookat = Point3::zero();
-            vfov = 20.0;
-        },
-        3 => {
-            world = scenes::two_perlin_spheres::build_scene();
-            lookfrom = Point3::new(13.0, 2.0, 3.0);
-            lookat = Point3::zero();
-            vfov = 20.0;
-        },
-        4 => {
-            world = scenes::earth::build_scene();
-            lookfrom = Point3::new(13.0, 2.0, 3.0);
-            lookat = Point3::zero();
-            vfov = 20.0;
-        },
-        5 => {
-            world = scenes::simple_light::build_scene();
-            lookfrom = Point3::new(26.0, 3.0, 6.0);
-            lookat = Point3::new(0.0, 2.0, 0.0);
-            vfov = 20.0;
-            background_colour = Colour::zero();
-        },
-        6 => {
-            world = scenes::cornell_box::build_scene();
-            aspect_ratio = 1.0;
-            image_width = 400;
-            samples_per_pixel = 200;
-            background_colour = Colour::zero();
+    let light_mat = Arc::new(DiffuseLight::new(Colour::new(15.0, 15.0, 15.0)));
+    lights.add(Arc::new(XzRectangle::new(213.0, 343.0, 227.0, 332.0, 554.0, light_mat.clone())));
+    // lights.add(Arc::new(Sphere::new(Point3::new(190.0, 90.0, 190.0), 90.0, light_mat)));
 
-            lookfrom = Point3::new(278.0, 278.0, -800.0);
-            lookat = Point3::new(278.0, 278.0, 0.0);
-            vfov = 40.0;
-        },
-        7 => {
-            world = scenes::cornell_smoke::build_scene();
-            aspect_ratio = 1.0;
-            image_width = 1024;
-            samples_per_pixel = 5000;
-            background_colour = Colour::zero();
-
-            lookfrom = Point3::new(278.0, 278.0, -800.0);
-            lookat = Point3::new(278.0, 278.0, 0.0);
-            vfov = 40.0;
-        },
-        8 => {
-            world = scenes::final_scene::build_scene();
-            aspect_ratio = 1.0;
-            image_width = 1024;
-            samples_per_pixel = 10000;
-            background_colour = Colour::zero();
-            time = 0.0..1.0;
-            lookfrom = Point3::new(478.0, 278.0, -600.0);
-            lookat = Point3::new(278.0, 278.0, 0.0);
-            vfov = 40.0;
-        },
-        _ => {
-            world = HittableList::new();
-            lookfrom = Point3::new(13.0, 2.0, 3.0);
-            lookat = Point3::zero();
-            vfov = 20.0;
-            background_colour = Colour::zero();
-        }
-    }
+    lookfrom = Point3::new(278.0, 278.0, -800.0);
+    lookat = Point3::new(278.0, 278.0, 0.0);
+    vfov = 40.0;
 
     let vup = Vec3::new(0.0,1.0,0.0);
     let dist_to_focus = 10.0;
     
     let cam = Camera::new(lookfrom, lookat, vup, vfov, aspect_ratio, aperture, dist_to_focus, time);
-    let scene = Scene::new(cam, world, background_colour);
+    let scene = Scene::new(cam, world, Arc::new(lights), background_colour);
 
     // Render
     let mut renderer = Renderer::new();

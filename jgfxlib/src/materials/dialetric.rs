@@ -7,6 +7,8 @@ use crate::ray::Ray;
 use crate::colour::Colour;
 use crate::utils::fmin;
 
+use super::ScatterRecord;
+
 pub struct Dialetric {
     ir: f64 // index of refraction
 }
@@ -29,7 +31,7 @@ impl Dialetric {
 
 impl Material for Dialetric {
     // Returns (attenuation, scattered_ray) as an option
-    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
+    fn scatter(&self, rng: &mut SmallRng, ray_in: &Ray, rec: &HitRecord) -> Option<ScatterRecord> {
         let attenuation = Colour::new(1.0, 1.0, 1.0);
         let refraction_ratio = if rec.front_face { 1.0 / self.ir } else { self.ir };
 
@@ -45,8 +47,10 @@ impl Material for Dialetric {
             unit_direction.refract(&rec.n, refraction_ratio)
         };
 
-        let scattered = Ray::new(rec.p.clone(), direction, ray_in.time);
+        let specular_ray = Ray::new(rec.p.clone(), direction, ray_in.time);
 
-        Some((attenuation, scattered))
+        let srec = ScatterRecord::new(Some(specular_ray), attenuation, None);
+
+        Some(srec)
     }
 }

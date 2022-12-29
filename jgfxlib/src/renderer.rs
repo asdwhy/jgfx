@@ -1,9 +1,14 @@
+use std::sync::Arc;
+
 use image::buffer::EnumeratePixelsMut;
 use image::{ImageBuffer, RgbImage, Rgb};
 use rand::{SeedableRng, Rng, thread_rng};
 use rand::rngs::SmallRng;
 use rayon::prelude::*;
 
+use crate::pdfs::Pdf;
+use crate::pdfs::hittable_pdf::HittablePdf;
+use crate::pdfs::mixture_pdf::MixturePdf;
 use crate::scene::Scene;
 use crate::ray::Ray;
 use crate::hittables::{Hittable}; 
@@ -95,11 +100,22 @@ impl Renderer {
                 scene.background_colour
             },
             Some(rec) => {
-                let emitted = rec.material.emitted(rec.u, rec.v, &rec.p);
+                let emitted = rec.material.emitted(&r, &rec);
 
-                match rec.material.scatter(rng, r, &rec) {
-                    Some((attenuation, scattered)) => {
-                        emitted + attenuation * self.path_trace(rng, scene, scattered, depth - 1)
+                match rec.material.scatter(rng, &r, &rec) {
+                    Some(srec) => {
+                        if let Some(specular_ray) = srec.specular_ray { // scatted ray is implicitly sampled
+                            srec.attenuation * self.path_trace(rng, scene, specular_ray, depth - 1)
+                        } else {
+                            let light_pdf = Arc::new(HittablePdf::new(scene.lights.clone(),rec.p));
+                            let p = MixturePdf::new(light_pdf, srec.pdf.unwrap()); // light should have pdf
+
+                            let scattered = Ray::new(rec.p, p.generate(rng), r.time);
+                            let pdf_val = p.value(rng, &scattered.dir);
+
+                            emitted + (srec.attenuation * rec.material.scaterring_pdf(rng, &r, &rec, &scattered)
+                            * self.path_trace(rng, scene, scattered, depth - 1)) / pdf_val
+                        }
                     },
                     None => emitted // if light doesnt scatter off this object, return the light emitted from it
                 }

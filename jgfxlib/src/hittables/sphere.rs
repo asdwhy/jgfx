@@ -1,3 +1,4 @@
+use std::f64::INFINITY;
 use std::f64::consts::PI;
 use std::ops::Range;
 use std::sync::Arc;
@@ -5,7 +6,9 @@ use std::sync::Arc;
 use rand::rngs::SmallRng;
 
 use crate::aabb::AABB;
+use crate::constants::EPSILON;
 use crate::materials::Material;
+use crate::onb::Onb;
 use crate::vec3::Vec3;
 use crate::{point3::Point3};
 use crate::ray::Ray;
@@ -77,6 +80,31 @@ impl Hittable for Sphere {
                 &self.origin + Vec3::new(self.radius, self.radius, self.radius)
             )
         )
+    }
+
+    fn pdf_value(&self, rng: &mut SmallRng, o: &Point3, v: &Vec3) -> f64 {
+        let r = Ray::new(*o, *v, 0.0);
+
+
+        match self.intersect(rng, &r, EPSILON, INFINITY) {
+            Some(_) => {
+                let cos_theta_max = (1.0 - self.radius*self.radius/(self.origin-o).length_squared()).sqrt();
+                let solid_angle = 2.0 * PI * (1.0 - cos_theta_max);
+
+                1.0 / solid_angle
+            },
+            None => 0.0,
+        }
+    }
+
+    fn random(&self, rng: &mut SmallRng, o: &Point3) -> Vec3 {
+        let direction = self.origin - o;
+
+        let distance_squared = direction.length_squared();
+
+        let uvw = Onb::new(&direction);
+
+        uvw.local_vec(&Vec3::random_to_sphere(rng, self.radius, distance_squared))
     }
 
 }

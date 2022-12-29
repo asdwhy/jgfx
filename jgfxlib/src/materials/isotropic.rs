@@ -4,7 +4,7 @@ use rand::rngs::SmallRng;
 
 use crate::{textures::{Texture, solid_colour::SolidColour}, colour::Colour, ray::Ray, hittables::HitRecord, vec3::Vec3};
 
-use super::Material;
+use super::{Material, ScatterRecord};
 
 pub struct Isotropic {
     albedo: Arc<dyn Texture>
@@ -26,11 +26,13 @@ impl Isotropic {
 }
 
 impl Material for Isotropic {
-    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
+    fn scatter(&self, rng: &mut SmallRng, ray_in: &Ray, rec: &HitRecord) -> Option<ScatterRecord> {
 
         let scattered = Ray::new(rec.p, Vec3::random_in_unit_sphere(rng), ray_in.time);
         let attenuation = self.albedo.value(rec.u, rec.v, &rec.p);
 
-        Some((attenuation, scattered))
+        let srec = ScatterRecord::new(Some(scattered), attenuation, None);
+
+        Some(srec)
     }
 }

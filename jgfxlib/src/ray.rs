@@ -16,6 +16,14 @@ impl Ray {
         }
     }
 
+    pub fn zero() -> Self {
+        Self {
+            origin: Point3::zero(),
+            dir: Vec3::zero(),
+            time: 0.0
+        }
+    }
+
     pub fn at(&self, t: f64) -> Point3 {
         &self.origin + t * &self.dir
     }

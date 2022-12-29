@@ -33,9 +33,19 @@ impl HitRecord {
     }
 }
 
+#[allow(unused)]
 pub trait Hittable: Send + Sync {
     fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
+
     fn bounding_box(&self, time: Range<f64>) -> Option<AABB>;
+
+    fn pdf_value(&self, rng: &mut SmallRng, o: &Point3, v: &Vec3) -> f64 {
+        0.0
+    }
+
+    fn random(&self, rng: &mut SmallRng, o: &Point3) -> Vec3 {
+        Vec3::new(1.0, 0.0, 0.0)
+    }
 }
 
 pub mod hittable_list;
@@ -47,3 +57,4 @@ pub mod rect_prism;
 pub mod translate;
 pub mod rotate_y;
 pub mod constant_medium;
+pub mod flip_face;
