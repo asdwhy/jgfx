@@ -10,18 +10,8 @@ use crate::textures::Texture;
 use crate::textures::solid_colour::SolidColour;
 use crate::vec3::Vec3;
 
-
-#[derive(Default)]
-pub enum DiffuseMethod {
-    CosCubed,
-    CosSphere,
-    #[default]
-    CosHemisphere
-}
-
 pub struct Lambertian {
-    albedo: Arc<dyn Texture>,
-    diffuse_method: DiffuseMethod
+    albedo: Arc<dyn Texture>
 }
 
 impl Lambertian {
@@ -29,32 +19,14 @@ impl Lambertian {
     pub fn new(albedo: Colour) -> Self {
         Self {
             albedo: Arc::new(SolidColour::from_rgb(albedo.x, albedo.y, albedo.z)),
-            diffuse_method: DiffuseMethod::default()
         }
     }
 
     pub fn from_texture(albedo: Arc<dyn Texture>) -> Self {
         Self {
             albedo: albedo.clone(),
-            diffuse_method: DiffuseMethod::default()
         }
     }
-
-    /// Set the method this image will implement diffuse
-    pub fn set_diffuse_method(&mut self, method: DiffuseMethod) {
-        self.diffuse_method = method;
-    }
-
-    // fn diffuse_direction(&self, rec: &HitRecord) -> Ray {
-    //     let target = match self.diffuse_method {
-    //         DiffuseMethod::CosCubed => &rec.p + &rec.n + Vec3::random_in_unit_sphere(),
-    //         DiffuseMethod::CosSphere => &rec.p + &rec.n + Vec3::random_unit_vector(),
-    //         DiffuseMethod::CosHemisphere => &rec.p + Vec3::random_in_hemisphere(&rec.n),
-    //     };
-
-    //     // 0=p, 1=n
-    //     Ray::new(&rec.p, &(&target - &rec.p))
-    // }
 }
 
 impl Material for Lambertian {

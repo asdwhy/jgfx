@@ -90,8 +90,8 @@ fn main() {
         8 => {
             world = scenes::final_scene::build_scene();
             aspect_ratio = 1.0;
-            image_width = 1024;
-            samples_per_pixel = 10000;
+            image_width = 600;
+            samples_per_pixel = 500;
             background_colour = Colour::zero();
             time = 0.0..1.0;
             lookfrom = Point3::new(478.0, 278.0, -600.0);

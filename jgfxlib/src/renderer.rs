@@ -88,22 +88,21 @@ impl Renderer {
             return Colour::zero();
         }
 
-        let hit = scene.objects.intersect(rng, &r, EPSILON, INFINITY);
+        // intersect ray with scene
+        let rec = match scene.objects.intersect(rng, &r, EPSILON, INFINITY) {
+            Some(rec) => rec,
+            None => return scene.background_colour
+        };
 
-        match hit {
-            None => {
-                scene.background_colour
-            },
-            Some(rec) => {
-                let emitted = rec.material.emitted(rec.u, rec.v, &rec.p);
+        // get emitted light from object hit
+        let emitted = rec.material.emitted(rec.u, rec.v, &rec.p);
 
-                match rec.material.scatter(rng, r, &rec) {
-                    Some((attenuation, scattered)) => {
-                        emitted + attenuation * self.path_trace(rng, scene, scattered, depth - 1)
-                    },
-                    None => emitted // if light doesnt scatter off this object, return the light emitted from it
-                }
-            }
-        }
+        // get scattered ray from the material
+        let (attenuation, scattered) = match rec.material.scatter(rng, r, &rec) {
+            Some((attenuation, scattered)) => (attenuation, scattered),
+            None => return emitted // if light doesnt scatter off this object, return the light emitted from it
+        };
+
+        return emitted + attenuation * self.path_trace(rng, scene, scattered, depth - 1)
     }
 }

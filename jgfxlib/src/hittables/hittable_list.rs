@@ -51,15 +51,15 @@ impl Hittable for HittableList {
         let mut output_box: Option<AABB> = None;
 
         for object in &self.objects {
-            match object.bounding_box(time.clone()) {
+            let the_box = match object.bounding_box(time.clone()) {
                 None => return None,
-                Some(the_box) => {
-                    output_box = match output_box {
-                        None => Some(the_box),
-                        Some(current_box) => Some(surrounding_box(current_box, the_box))
-                    };
-                }
-            }
+                Some(the_box) => the_box
+            };
+
+            output_box = match output_box {
+                Some(current_box) => Some(surrounding_box(current_box, the_box)),
+                None => Some(the_box),
+            };
         }
 
         output_box
