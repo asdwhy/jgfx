@@ -1,5 +1,4 @@
 use std::cmp::Ordering;
-
 use crate::constants::EPSILON;
 
 /// Returns true if a is roughly 0

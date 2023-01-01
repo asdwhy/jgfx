@@ -1,9 +1,11 @@
 use rand::{rngs::SmallRng, SeedableRng};
+use crate::{
+    random::{random_i32, random_in_range}, 
+    point3::Point3, 
+    vec3::Vec3
+};
 
 /// Generates perlin noise
-
-use crate::{random::{random_i32}, point3::Point3, vec3::Vec3};
-
 const POINT_COUNT: usize = 256;
 
 pub struct Perlin {
@@ -19,7 +21,7 @@ impl Perlin {
         let mut rng = SmallRng::from_entropy();
 
         for i in 0..POINT_COUNT {
-            random_vectors[i] = Vec3::random_in_range(&mut rng, -1.0, 1.0);
+            random_vectors[i] = random_in_range(&mut rng, -1.0, 1.0);
         }
         
         Self {

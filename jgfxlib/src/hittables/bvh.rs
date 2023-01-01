@@ -1,13 +1,13 @@
 use std::{ops::Range, cmp::Ordering};
 use std::sync::Arc;
-
 use rand::rngs::SmallRng;
-
-use crate::aabb::surrounding_box;
-use crate::utils::sort_from;
-use crate::{hittables::{Hittable, HitRecord}, aabb::AABB, random::random_i32};
-use crate::hittables::hittable_list::HittableList;
-use crate::ray::Ray;
+use crate::{
+    aabb::{surrounding_box, AABB},
+    utils::sort_from,
+    hittables::{Hittable, HitRecord, hittable_list::HittableList},
+    random::random_i32,
+    ray::Ray
+};
 
 pub struct BvhNode {
     left: Arc<dyn Hittable>,

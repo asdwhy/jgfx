@@ -1,6 +1,8 @@
-use crate::{point3::Point3};
-use crate::ray::Ray;
-use crate::utils::{fmin, fmax};
+use crate::{
+    point3::Point3,
+    ray::Ray,
+    utils::{fmin, fmax}
+};
 
 /// Axis Aligned Bounding Box
 #[derive(Clone)]

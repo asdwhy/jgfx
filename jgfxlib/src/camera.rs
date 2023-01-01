@@ -1,8 +1,11 @@
 use std::ops::Range;
-
 use rand::{rngs::SmallRng, Rng};
-
-use crate::{point3::Point3, vec3::Vec3, ray::Ray};
+use crate::{
+    point3::Point3, 
+    vec3::Vec3, 
+    ray::Ray, 
+    random::random_in_unit_disk
+};
 
 #[allow(unused)]
 pub struct Camera {
@@ -63,7 +66,7 @@ impl Camera {
             origin = self.origin.clone();
             dir = &self.lower_left_corner + s * &self.horizontal + t * &self.vertical - &self.origin;
         } else {
-            let rd = self.lens_radius * Vec3::random_in_unit_disk(rng);
+            let rd = self.lens_radius * random_in_unit_disk(rng);
             let offset = &self.u * rd.x + &self.v * rd.y;
 
             origin = &self.origin + &offset;

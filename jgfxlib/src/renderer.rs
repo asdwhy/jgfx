@@ -1,15 +1,14 @@
-use image::buffer::EnumeratePixelsMut;
-use image::{ImageBuffer, RgbImage, Rgb};
-use rand::{SeedableRng, Rng, thread_rng};
-use rand::rngs::SmallRng;
+use image::{ImageBuffer, RgbImage, Rgb, buffer::EnumeratePixelsMut};
+use rand::{SeedableRng, Rng, thread_rng, rngs::SmallRng};
 use rayon::prelude::*;
-
-use crate::scene::Scene;
-use crate::ray::Ray;
-use crate::hittables::{Hittable}; 
-use crate::constants::{INFINITY, EPSILON};
-use crate::utils::max;
-use crate::colour::{Colour};
+use crate::{
+    scene::Scene,
+    ray::Ray,
+    hittables::Hittable,
+    constants::{INFINITY, EPSILON},
+    utils::max,
+    colour::Colour
+};
 
 pub struct Renderer {
     num_samples: u32,
@@ -18,11 +17,9 @@ pub struct Renderer {
 }
 
 impl Renderer {
-    pub fn new() -> Self {
+    pub fn new(num_samples: u32, depth: u32, multithreading: bool) -> Self {
         Self {
-            num_samples: 10,
-            depth: 10,
-            multithreading: false
+            num_samples, depth, multithreading
         }
     }
 
@@ -42,7 +39,7 @@ impl Renderer {
         self.multithreading = multithreading;
     }
 
-    pub fn render(&mut self, scene: &Scene, image_height: u32, image_width: u32) -> RgbImage {
+    pub fn render(&self, scene: &Scene, image_height: u32, image_width: u32) -> RgbImage {
         let mut img = ImageBuffer::new(image_width, image_height);
 
         let f = |(_, cols): (u32, EnumeratePixelsMut<Rgb<u8>>)| {

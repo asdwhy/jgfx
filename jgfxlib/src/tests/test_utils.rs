@@ -1,9 +1,8 @@
 use std::cmp::Ordering;
-
-use crate::utils::{is_zero, equal, in_range, max, fmin, fmax, clamp, sort_from};
-use crate::constants::EPSILON;
-
-
+use crate::{
+    utils::{is_zero, equal, in_range, max, fmin, fmax, clamp, sort_from},
+    constants::EPSILON
+};
 
 #[test]
 fn test_is_zero() {

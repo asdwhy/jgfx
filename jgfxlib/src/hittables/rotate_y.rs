@@ -1,11 +1,13 @@
 use std::{sync::Arc, ops::Range, f64::{NEG_INFINITY, INFINITY}};
-
 use rand::rngs::SmallRng;
-
-use crate::{hittables::Hittable, aabb::AABB, ray::Ray, point3::Point3, vec3::Vec3, utils::{fmin, fmax}};
-
-use super::HitRecord;
-
+use crate::{
+    hittables::{Hittable, HitRecord}, 
+    aabb::AABB, 
+    ray::Ray, 
+    point3::Point3, 
+    vec3::Vec3,
+    utils::{fmin, fmax}
+};
 
 pub struct RotateY {
     obj: Arc<dyn Hittable>,

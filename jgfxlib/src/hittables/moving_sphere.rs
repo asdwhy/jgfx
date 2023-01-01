@@ -1,17 +1,14 @@
-use std::f64::consts::PI;
-use std::ops::Range;
-use std::sync::Arc;
-
+use std::{f64::consts::PI, ops::Range, sync::Arc};
 use rand::rngs::SmallRng;
-
-use crate::aabb::{AABB, surrounding_box};
-use crate::point3::Point3;
-use crate::materials::Material;
-use crate::ray::Ray;
-use crate::utils::in_range;
-use crate::hittables::{Hittable, HitRecord};
-use crate::vec3::Vec3;
-
+use crate::{
+    aabb::{AABB, surrounding_box},
+    point3::Point3,
+    materials::Material,
+    ray::Ray,
+    utils::in_range,
+    hittables::{Hittable, HitRecord},
+    vec3::Vec3
+};
 
 pub struct MovingSphere {
     pub origin0: Point3,

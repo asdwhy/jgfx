@@ -1,10 +1,10 @@
-use image::RgbImage;
-use image::DynamicImage;
-
-use crate::colour::Colour;
-use crate::point3::Point3;
-use crate::textures::Texture;
-use crate::utils::clamp;
+use image::{RgbImage, DynamicImage};
+use crate::{
+    colour::Colour,
+    point3::Point3,
+    textures::Texture,
+    utils::clamp
+};
 
 pub struct ImageTexture {
     data: RgbImage,

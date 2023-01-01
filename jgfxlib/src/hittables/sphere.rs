@@ -1,16 +1,14 @@
-use std::f64::consts::PI;
-use std::ops::Range;
-use std::sync::Arc;
-
+use std::{f64::consts::PI, ops::Range, sync::Arc};
 use rand::rngs::SmallRng;
-
-use crate::aabb::AABB;
-use crate::materials::Material;
-use crate::vec3::Vec3;
-use crate::{point3::Point3};
-use crate::ray::Ray;
-use crate::utils::in_range;
-use crate::hittables::{HitRecord,Hittable};
+use crate::{
+    aabb::AABB,
+    materials::Material,
+    vec3::Vec3,
+    point3::Point3,
+    ray::Ray,
+    utils::in_range,
+    hittables::{HitRecord, Hittable}
+};
 
 pub struct Sphere {
     pub origin: Point3,

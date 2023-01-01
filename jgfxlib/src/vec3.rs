@@ -1,6 +1,5 @@
-use crate::utils::{equal, is_zero, fmin};
-
 use std::{ops::{self, Index, IndexMut}};
+use crate::utils::{equal, is_zero, fmin};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Vec3 {

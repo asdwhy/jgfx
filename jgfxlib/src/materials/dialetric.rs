@@ -1,11 +1,11 @@
-use rand::Rng;
-use rand::rngs::SmallRng;
-
-use crate::hittables::HitRecord;
-use crate::materials::Material;
-use crate::ray::Ray;
-use crate::colour::Colour;
-use crate::utils::fmin;
+use rand::{Rng, rngs::SmallRng};
+use crate::{
+    hittables::HitRecord,
+    materials::Material,
+    ray::Ray,
+    colour::Colour,
+    utils::fmin
+};
 
 pub struct Dialetric {
     ir: f64 // index of refraction

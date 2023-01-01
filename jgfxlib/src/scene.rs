@@ -1,6 +1,8 @@
-use crate::colour::Colour;
-use crate::hittables::{hittable_list::HittableList};
-use crate::camera::Camera;
+use crate::{
+    colour::Colour,
+    hittables::{hittable_list::HittableList},
+    camera::Camera
+};
 
 pub struct Scene {
     pub objects: HittableList,

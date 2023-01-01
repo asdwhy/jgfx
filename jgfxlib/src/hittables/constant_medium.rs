@@ -1,22 +1,14 @@
 use std::{sync::Arc, ops::Range, f64::{NEG_INFINITY, INFINITY}};
-
 use rand::{rngs::SmallRng, Rng};
-
 use crate::{
-    hittables::Hittable, 
-    materials::{
-        Material, 
-        isotropic::Isotropic
-    }, 
+    hittables::{Hittable, HitRecord},
+    materials::{Material, isotropic::Isotropic}, 
     textures::Texture, 
     colour::Colour, 
     aabb::AABB, 
     ray::Ray,
     vec3::Vec3
 };
-
-use super::HitRecord;
-
 
 pub struct ConstantMedium {
     boundary: Arc<dyn Hittable>,
@@ -77,7 +69,7 @@ impl Hittable for ConstantMedium {
         let n = Vec3::new(1.0,0.0,0.0);
 
         let mut rec = HitRecord::new(t, p, n, &self.phase_function, 0.0, 0.0);
-        rec.set_face_normal(r);
+        rec.set_face_normal(r); // arbitrary decision
 
         Some(rec)
     }

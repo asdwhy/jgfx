@@ -1,6 +1,11 @@
 use rand::rngs::SmallRng;
 
-use crate::{ray::Ray, hittables::HitRecord, colour::Colour, point3::Point3};
+use crate::{
+    ray::Ray, 
+    hittables::HitRecord, 
+    colour::Colour, 
+    point3::Point3
+};
 
 #[allow(unused)]
 pub trait Material: Send + Sync {

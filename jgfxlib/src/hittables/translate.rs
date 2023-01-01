@@ -1,11 +1,11 @@
 use std::{sync::Arc, ops::Range};
-
 use rand::rngs::SmallRng;
-
-use crate::{hittables::Hittable, vec3::Vec3, ray::Ray, aabb::AABB};
-
-use super::HitRecord;
-
+use crate::{
+    hittables::{Hittable, HitRecord}, 
+    vec3::Vec3, 
+    ray::Ray, 
+    aabb::AABB
+};
 
 pub struct Translate {
     obj: Arc<dyn Hittable>,

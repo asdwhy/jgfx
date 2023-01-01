@@ -1,8 +1,8 @@
-use crate::colour::Colour;
-use crate::point3::Point3;
-use crate::textures::perlin::Perlin;
-
-use crate::textures::Texture;
+use crate::{
+    colour::Colour,
+    point3::Point3,
+    textures::{perlin::Perlin, Texture}
+};
 
 pub struct NoiseTexture {
     noise: Perlin,

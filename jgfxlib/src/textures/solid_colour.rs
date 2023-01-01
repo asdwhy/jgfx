@@ -1,8 +1,8 @@
-use crate::colour::Colour;
-
-use crate::point3::Point3;
-use crate::textures::Texture;
-
+use crate::{
+    colour::Colour,
+    point3::Point3,
+    textures::Texture
+};
 
 pub struct SolidColour {
     colour_value: Colour

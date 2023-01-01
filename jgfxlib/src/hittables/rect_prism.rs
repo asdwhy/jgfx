@@ -1,20 +1,15 @@
-use std::ops::Range;
-use std::sync::Arc;
-
+use std::{ops::Range, sync::Arc};
 use rand::rngs::SmallRng;
-
-use crate::aabb::AABB;
-use crate::ray::Ray;
-use crate::{point3::Point3, materials::Material};
-
-use crate::hittables::{
-    hittable_list::HittableList, 
-    aa_rectangles::{
-        xy_rect::XyRectangle, 
-        xz_rect::XzRectangle, 
-        yz_rect::YzRectangle
-    }, 
-    Hittable
+use crate::{
+    aabb::AABB,
+    ray::Ray,
+    point3::Point3,
+    materials::Material,
+    hittables::{
+        hittable_list::HittableList, 
+        aa_rectangles::{xy_rect::XyRectangle, xz_rect::XzRectangle, yz_rect::YzRectangle}, 
+        Hittable
+    }
 };
 
 use super::HitRecord;

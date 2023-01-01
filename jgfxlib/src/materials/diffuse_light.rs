@@ -1,11 +1,13 @@
 use std::sync::Arc;
-
 use rand::rngs::SmallRng;
-
-use crate::{textures::{Texture, solid_colour::SolidColour}, colour::Colour, ray::Ray, hittables::HitRecord, point3::Point3};
-
-use super::Material;
-
+use crate::{
+    textures::{Texture, solid_colour::SolidColour}, 
+    colour::Colour, 
+    materials::Material,
+    ray::Ray, 
+    hittables::HitRecord, 
+    point3::Point3
+};
 
 pub struct DiffuseLight {
     emit: Arc<dyn Texture>

@@ -1,11 +1,9 @@
 use std::sync::Arc;
-
-use crate::point3::Point3;
-use crate::{textures::Texture};
-use crate::colour::Colour;
-
-use crate::textures::solid_colour::SolidColour;
-
+use crate::{
+    point3::Point3,
+    textures::{Texture, solid_colour::SolidColour},
+    colour::Colour,
+};
 
 pub struct CheckerTexture {
     odd: Arc<dyn Texture>,

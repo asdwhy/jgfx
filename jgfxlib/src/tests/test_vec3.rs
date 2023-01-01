@@ -1,7 +1,8 @@
-use crate::utils::equal;
-use crate::vec3::Vec3;
-
 use std::f64::consts::PI;
+use crate::{
+    vec3::Vec3,
+    utils::equal
+};
 
 static TEST_VEC: (f64, f64, f64) = (1f64, 2f64, 3f64);
 static TEST_VEC2: (f64, f64, f64) = (5f64, 4f64, 1f64);

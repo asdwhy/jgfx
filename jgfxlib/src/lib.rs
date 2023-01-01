@@ -7,7 +7,7 @@ pub mod renderer;
 pub mod materials;
 pub mod point3;
 pub mod textures;
-mod random;
+pub mod random;
 mod aabb;
 mod constants;
 mod utils;

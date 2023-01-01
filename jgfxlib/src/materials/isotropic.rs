@@ -1,10 +1,14 @@
 use std::sync::Arc;
-
 use rand::rngs::SmallRng;
-
-use crate::{textures::{Texture, solid_colour::SolidColour}, colour::Colour, ray::Ray, hittables::HitRecord, vec3::Vec3};
-
-use super::Material;
+use crate::{
+    textures::{Texture, 
+       solid_colour::SolidColour}, 
+       colour::Colour, 
+       ray::Ray, 
+       hittables::HitRecord, 
+       random::random_in_unit_sphere,
+       materials::Material
+};
 
 pub struct Isotropic {
     albedo: Arc<dyn Texture>
@@ -28,7 +32,7 @@ impl Isotropic {
 impl Material for Isotropic {
     fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
 
-        let scattered = Ray::new(rec.p, Vec3::random_in_unit_sphere(rng), ray_in.time);
+        let scattered = Ray::new(rec.p, random_in_unit_sphere(rng), ray_in.time);
         let attenuation = self.albedo.value(rec.u, rec.v, &rec.p);
 
         Some((attenuation, scattered))

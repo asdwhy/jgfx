@@ -1,6 +1,8 @@
 use image::Rgb;
-
-use crate::{vec3::Vec3, utils::clamp};
+use crate::{
+    vec3::Vec3, 
+    utils::clamp
+};
 
 pub type Colour = Vec3;
 
@@ -13,6 +15,10 @@ impl Colour {
         let mut r = self.x;
         let mut g = self.y;
         let mut b = self.z;
+
+        if r.is_nan() { r = 0.0; };
+        if g.is_nan() { g = 0.0; };
+        if b.is_nan() { b = 0.0; };
 
         r = r.sqrt();
         g = g.sqrt();

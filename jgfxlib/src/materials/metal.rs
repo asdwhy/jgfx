@@ -1,11 +1,12 @@
 use rand::rngs::SmallRng;
-
-use crate::hittables::HitRecord;
-use crate::materials::Material;
-use crate::ray::Ray;
-use crate::colour::Colour;
-use crate::utils::{fmin};
-use crate::vec3::Vec3;
+use crate::{
+    hittables::HitRecord,
+    materials::Material,
+    random::random_in_unit_sphere,
+    colour::Colour,
+    utils::fmin,
+    ray::Ray
+};
 
 pub struct Metal {
     albedo: Colour,
@@ -27,7 +28,7 @@ impl Material for Metal {
     fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
         let reflected_dir = ray_in.dir.normalized().reflect(&rec.n);
 
-        let scattered = Ray::new(rec.p.clone(), &reflected_dir + self.fuzzy*Vec3::random_in_unit_sphere(rng), ray_in.time);
+        let scattered = Ray::new(rec.p.clone(), &reflected_dir + self.fuzzy*random_in_unit_sphere(rng), ray_in.time);
         let attenuation = self.albedo.clone();
 
         if scattered.dir.dot(&rec.n) > 0.0 {

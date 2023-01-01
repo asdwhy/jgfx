@@ -1,12 +1,15 @@
 // Rectangle aligned with Y-Z Plane
 
 use std::{sync::Arc, ops::Range};
-
 use rand::rngs::SmallRng;
-
-use crate::{materials::Material, aabb::AABB, point3::Point3, ray::Ray, vec3::Vec3};
-
-use crate::hittables::{Hittable, HitRecord};
+use crate::{
+    materials::Material, 
+    aabb::AABB, 
+    point3::Point3, 
+    ray::Ray, 
+    vec3::Vec3,
+    hittables::{Hittable, HitRecord}
+};
 
 pub struct YzRectangle {
     material: Arc<dyn Material>,

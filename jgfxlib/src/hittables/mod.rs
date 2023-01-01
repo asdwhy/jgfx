@@ -1,8 +1,12 @@
 use std::{sync::Arc, ops::Range};
-
 use rand::rngs::SmallRng;
-
-use crate::{ray::Ray, point3::Point3, vec3::Vec3, materials::Material, aabb::AABB};
+use crate::{
+    ray::Ray, 
+    point3::Point3, 
+    vec3::Vec3, 
+    materials::Material, 
+    aabb::AABB
+};
 
 pub struct HitRecord {
     pub p: Point3,                      // point of intersection

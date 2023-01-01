@@ -1,6 +1,7 @@
-use crate::{point3::Point3};
-use crate::colour::Colour;
-
+use crate::{
+    point3::Point3,
+    colour::Colour
+};
 
 pub trait Texture: Send + Sync {
     fn value(&self, u: f64, v: f64, p: &Point3) -> Colour;

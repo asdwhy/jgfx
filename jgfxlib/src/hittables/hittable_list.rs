@@ -1,12 +1,11 @@
 use std::ops::{Range};
 use std::sync::Arc;
-
 use rand::rngs::SmallRng;
-
-use crate::aabb::{AABB, surrounding_box};
-use crate::ray::Ray;
-use crate::{hittables::Hittable};
-use crate::hittables::HitRecord;
+use crate::{
+    aabb::{AABB, surrounding_box},
+    ray::Ray,
+    hittables::{HitRecord, Hittable}
+};
 
 pub struct HittableList {
     pub objects: Vec<Arc<dyn Hittable>>,
