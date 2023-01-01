@@ -3,9 +3,13 @@ mod scenes;
 use std::sync::Arc;
 
 use jgfxlib::colour::Colour;
+use jgfxlib::hittables::Hittable;
 use jgfxlib::hittables::aa_rectangles::xz_rect::XzRectangle;
 use jgfxlib::hittables::hittable_list::{HittableList};
+use jgfxlib::hittables::rect_prism::RectangularPrism;
+use jgfxlib::hittables::rotate_y::RotateY;
 use jgfxlib::hittables::sphere::Sphere;
+use jgfxlib::hittables::translate::Translate;
 use jgfxlib::materials::diffuse_light::DiffuseLight;
 use jgfxlib::{camera::Camera};
 use jgfxlib::vec3::Vec3;
@@ -22,7 +26,7 @@ fn main() {
     // Image
     let aspect_ratio = 1.0;
     let image_width = 600 as u32;
-    let samples_per_pixel = 1000;
+    let samples_per_pixel = 100;
     let max_depth = 30;
 
     // World
@@ -39,7 +43,12 @@ fn main() {
 
     let light_mat = Arc::new(DiffuseLight::new(Colour::new(15.0, 15.0, 15.0)));
     lights.add(Arc::new(XzRectangle::new(213.0, 343.0, 227.0, 332.0, 554.0, light_mat.clone())));
-    // lights.add(Arc::new(Sphere::new(Point3::new(190.0, 90.0, 190.0), 90.0, light_mat)));
+    // lights.add(Arc::new(Sphere::new(Point3::new(190.0, 90.0, 190.0), 90.0, light_mat.clone())));
+    
+    let mut b: Arc<dyn Hittable> = Arc::new(RectangularPrism::new(Point3::new(265.0, 100.0, 295.0), Point3::new(165.0+265.0, 330.0, 165.0 + 265.0), light_mat.clone()));
+    // b = Arc::new(RotateY::new(b, -18.0));
+    // b = Arc::new(Translate::new(b, Point3::new(130.0, 0.0, 65.0)));
+    lights.add(b);
 
     lookfrom = Point3::new(278.0, 278.0, -800.0);
     lookat = Point3::new(278.0, 278.0, 0.0);

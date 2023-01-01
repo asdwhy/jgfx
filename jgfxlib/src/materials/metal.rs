@@ -30,6 +30,11 @@ impl Material for Metal {
         let reflected = ray_in.dir.normalized().reflect(&rec.n);
 
         let specular_ray = Ray::new(rec.p, reflected + self.fuzzy*Vec3::random_in_unit_sphere(rng), ray_in.time);
+        
+        if specular_ray.dir.dot(&rec.n) <= 0.0 {
+            return None;
+        }
+        
         let attenuation = self.albedo.clone();
 
         let srec = ScatterRecord::new(Some(specular_ray), attenuation, None);

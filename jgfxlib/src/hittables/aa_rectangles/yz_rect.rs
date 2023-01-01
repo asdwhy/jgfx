@@ -2,8 +2,10 @@
 
 use std::{sync::Arc, ops::Range};
 
+use rand::Rng;
 use rand::rngs::SmallRng;
 
+use crate::constants::{EPSILON, INFINITY};
 use crate::{materials::Material, aabb::AABB, point3::Point3, ray::Ray, vec3::Vec3};
 
 use crate::hittables::{Hittable, HitRecord};
@@ -60,5 +62,26 @@ impl Hittable for YzRectangle {
             Point3::new(self.k-0.0001, self.y0, self.z0), 
             Point3::new(self.k+0.0001, self.y1, self.z1)
         ))
+    }
+
+    fn pdf_value(&self, rng: &mut SmallRng, o: &Point3, v: &Vec3) -> f64 {
+        let r = Ray::new(*o, *v, 0.0);
+
+        match self.intersect(rng, &r, EPSILON, INFINITY) {
+            Some(rec) => {
+                let area = (self.y1-self.y0)*(self.z1-self.z0);
+                let distance_squared = rec.t * rec.t * v.length_squared();
+                let cosine = v.dot(&rec.n).abs() / v.length();
+
+                return distance_squared / (cosine * area)
+            },
+            None => return 0.0
+        }
+    }
+
+    fn random(&self, rng: &mut SmallRng, o: &Point3) -> Vec3 {
+        let random_point = Point3::new(self.k, rng.gen_range(self.y0..self.y1), rng.gen_range(self.z0..self.z1));
+
+        random_point - o
     }
 }

@@ -32,19 +32,20 @@ pub fn build_scene() -> HittableList {
 
     // boxes
     let aluminum = Arc::new(Metal::new(Colour::new(0.8, 0.85, 0.88), 0.0));
-    let mut b: Arc<dyn Hittable> = Arc::new(RectangularPrism::new(Point3::zero(), Point3::new(165.0, 330.0, 165.0), aluminum));
-    b = Arc::new(RotateY::new(b, 15.0));
-    b = Arc::new(Translate::new(b, Point3::new(265.0, 0.0, 295.0)));
+    let mut b: Arc<dyn Hittable> = Arc::new(RectangularPrism::new(Point3::new(265.0, 100.0, 295.0), Point3::new(165.0+265.0, 330.0, 165.0 + 265.0), aluminum.clone()));
+    // let mut b: Arc<dyn Hittable> = Arc::new(RectangularPrism::new(Point3::zero(), Point3::new(165.0, 330.0, 165.0), aluminum.clone()));
+    // b = Arc::new(RotateY::new(b, 15.0));
+    // b = Arc::new(Translate::new(b, Point3::new(265.0, 0.0, 295.0)));
     objects.add(b);
 
     // closer box
     let mut b: Arc<dyn Hittable> = Arc::new(RectangularPrism::new(Point3::zero(), Point3::from_value(165.0), white.clone()));
-    b = Arc::new(RotateY::new(b, -18.0));
-    b = Arc::new(Translate::new(b, Point3::new(130.0, 0.0, 65.0)));
-    objects.add(b);
+    // b = Arc::new(RotateY::new(b, -18.0));
+    // b = Arc::new(Translate::new(b, Point3::new(130.0, 0.0, 65.0)));
+    // objects.add(b);
 
     // let glass = Arc::new(Dialetric::new(1.5));
-    // objects.add(Arc::new(Sphere::new(Point3::new(190.0, 90.0, 190.0), 90.0, glass)));
+    // objects.add(Arc::new(Sphere::new(Point3::new(190.0, 90.0, 190.0), 90.0, aluminum)));
 
     // objects
 

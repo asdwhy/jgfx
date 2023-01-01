@@ -26,6 +26,10 @@ impl HittableList {
         self.objects.push(hittable.clone());
     }
 
+    pub fn get(&self, i: usize) -> &Arc<dyn Hittable> {
+        self.objects.get(i).unwrap()
+    }
+
     pub fn clear(&mut self) {
         self.objects.clear();
     }

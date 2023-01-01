@@ -2,7 +2,7 @@ use std::{sync::Arc, ops::Range};
 
 use rand::rngs::SmallRng;
 
-use crate::{hittables::Hittable, vec3::Vec3, ray::Ray, aabb::AABB};
+use crate::{hittables::Hittable, vec3::Vec3, ray::Ray, aabb::AABB, point3::Point3};
 
 use super::HitRecord;
 
@@ -44,5 +44,13 @@ impl Hittable for Translate {
             )),
             None => None,
         }
+    }
+
+    fn pdf_value(&self, rng: &mut SmallRng, o: &Point3, v: &Vec3) -> f64 {
+        self.obj.pdf_value(rng, o, v)
+    }
+
+    fn random(&self, rng: &mut SmallRng, o: &Point3) -> Vec3 {
+        self.obj.random(rng, o)
     }
 }

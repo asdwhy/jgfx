@@ -104,4 +104,12 @@ impl Hittable for RotateY {
     fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
         self.bounding_box.clone()
     }
+
+    fn pdf_value(&self, rng: &mut SmallRng, o: &Point3, v: &Vec3) -> f64 {
+        self.obj.pdf_value(rng, o, v)
+    }
+
+    fn random(&self, rng: &mut SmallRng, o: &Point3) -> Vec3 {
+        self.obj.random(rng, o)
+    }
 }

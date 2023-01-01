@@ -1,10 +1,12 @@
 use std::ops::Range;
 use std::sync::Arc;
 
+use rand::Rng;
 use rand::rngs::SmallRng;
 
 use crate::aabb::AABB;
 use crate::ray::Ray;
+use crate::vec3::Vec3;
 use crate::{point3::Point3, materials::Material};
 
 use crate::hittables::{
@@ -55,5 +57,13 @@ impl Hittable for RectangularPrism {
 
     fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
         Some(AABB::new(self.min, self.max))
+    }
+    
+    fn pdf_value(&self, rng: &mut SmallRng, o: &Point3, v: &Vec3) -> f64 {
+        self.sides.pdf_value(rng, o, v)
+    }
+
+    fn random(&self, rng: &mut SmallRng, o: &Point3) -> Vec3 {
+        self.sides.random(rng, o)
     }
 }

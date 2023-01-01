@@ -39,10 +39,12 @@ pub trait Hittable: Send + Sync {
 
     fn bounding_box(&self, time: Range<f64>) -> Option<AABB>;
 
+    // Implement these functions on hittables that can be explicitly sampled (mostly lightsources)
     fn pdf_value(&self, rng: &mut SmallRng, o: &Point3, v: &Vec3) -> f64 {
         0.0
     }
 
+    // Implement these functions on hittables that can be explicitly sampled (mostly lightsources)
     fn random(&self, rng: &mut SmallRng, o: &Point3) -> Vec3 {
         Vec3::new(1.0, 0.0, 0.0)
     }
