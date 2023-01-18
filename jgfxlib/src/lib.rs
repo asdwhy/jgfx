@@ -12,6 +12,7 @@ mod aabb;
 mod constants;
 mod utils;
 mod ray;
+mod affine;
 
 #[cfg(test)]
 mod tests;

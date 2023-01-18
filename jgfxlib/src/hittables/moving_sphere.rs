@@ -7,7 +7,7 @@ use crate::{
     ray::Ray,
     utils::in_range,
     hittables::{Hittable, HitRecord},
-    vec3::Vec3
+    vec3::Vec3, affine::Affine
 };
 
 pub struct MovingSphere {
@@ -15,7 +15,8 @@ pub struct MovingSphere {
     pub origin1: Point3,
     pub time: Range<f64>,
     pub radius: f64,
-    pub material: Arc<dyn Material>
+    pub material: Arc<dyn Material>,
+    pub transform: Affine
 }
 
 impl MovingSphere {
@@ -28,7 +29,8 @@ impl MovingSphere {
     ) -> Self {
         Self {
             origin0, origin1, time, radius,
-            material: material.clone()
+            material: material.clone(),
+            transform: Affine::new()
         }
     }
 
@@ -38,7 +40,7 @@ impl MovingSphere {
 }
 
 impl Hittable for MovingSphere {
-    fn intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn canonical_intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = &r.origin - self.get_origin(r.time);
         let a = r.dir.length_squared();
         let half_b = oc.dot(&r.dir);
@@ -84,6 +86,10 @@ impl Hittable for MovingSphere {
         );
 
         Some(surrounding_box(box0, box1))
+    }
+
+    fn get_transformation(&self) -> &Affine {
+        &self.transform
     }
 }
 

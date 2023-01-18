@@ -10,7 +10,6 @@ pub struct Scene {
     pub background_colour: Colour
 }
 
-
 impl Scene {
     pub fn new(camera: Camera, objects: HittableList, background_colour: Colour) -> Self {
         Self {

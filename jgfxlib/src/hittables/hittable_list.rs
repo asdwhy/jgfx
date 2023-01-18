@@ -1,6 +1,7 @@
 use std::ops::{Range};
 use std::sync::Arc;
 use rand::rngs::SmallRng;
+use crate::affine::Affine;
 use crate::{
     aabb::{AABB, surrounding_box},
     ray::Ray,
@@ -9,12 +10,14 @@ use crate::{
 
 pub struct HittableList {
     pub objects: Vec<Arc<dyn Hittable>>,
+    pub transform: Affine
 }
 
 impl HittableList {
     pub fn new() -> Self where Self: Sized {
         Self {
-            objects: vec![]
+            objects: vec![],
+            transform: Affine::new()
         }
     }
 
@@ -25,10 +28,13 @@ impl HittableList {
     pub fn clear(&mut self) {
         self.objects.clear();
     }
+
+    
 }
 
 impl Hittable for HittableList {
-    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    /// Computes intersection of given ray with canonical list
+    fn canonical_intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {        
         let mut ret: Option<HitRecord> = None;
         let mut closest_t = t_max;
 
@@ -62,5 +68,9 @@ impl Hittable for HittableList {
         }
 
         output_box
+    }
+
+    fn get_transformation(&self) -> &Affine {
+        &self.transform
     }
 }

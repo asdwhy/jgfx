@@ -13,23 +13,24 @@ static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 fn main() {
     let now = std::time::Instant::now();
+    let multithreading = true;
 
     // Image
     let mut aspect_ratio = 16.0/9.0;
     let mut image_width = 400 as u32;
-    let mut samples_per_pixel = 10000;
+    let mut samples_per_pixel = 500;
     let max_depth = 25;
 
     // World
-    let world: HittableList;
+    let mut world = HittableList::new();
     let lookfrom: Point3;
     let lookat: Point3;
     let vfov: f64;
-    let aperture: f64 = 0.0;
+    let mut aperture: f64 = 0.0;
     let mut background_colour: Colour = Colour::new(0.7, 0.8, 1.0);
     let mut time = 0.0..0.0;
 
-    let scene_num = 7;
+    let scene_num = 8;
 
     match scene_num {
         1 => {
@@ -38,25 +39,25 @@ fn main() {
             lookat = Point3::zero();
             vfov = 20.0;
         },
-        2 => {
-            world = scenes::two_perlin_spheres::build_scene();
-            lookfrom = Point3::new(13.0, 2.0, 3.0);
-            lookat = Point3::zero();
-            vfov = 20.0;
-        },
+        // 2 => {
+        //     world = scenes::two_perlin_spheres::build_scene();
+        //     lookfrom = Point3::new(13.0, 2.0, 3.0);
+        //     lookat = Point3::zero();
+        //     vfov = 20.0;
+        // },
         3 => {
             world = scenes::earth::build_scene();
-            lookfrom = Point3::new(13.0, 2.0, 3.0);
+            lookfrom = Point3::new(0.0, 0.0, -15.0);
             lookat = Point3::zero();
             vfov = 20.0;
         },
-        4 => {
-            world = scenes::simple_light::build_scene();
-            lookfrom = Point3::new(26.0, 3.0, 6.0);
-            lookat = Point3::new(0.0, 2.0, 0.0);
-            vfov = 20.0;
-            background_colour = Colour::zero();
-        },
+        // 4 => {
+        //     world = scenes::simple_light::build_scene();
+        //     lookfrom = Point3::new(26.0, 3.0, 6.0);
+        //     lookat = Point3::new(0.0, 2.0, 0.0);
+        //     vfov = 20.0;
+        //     background_colour = Colour::zero();
+        // },
         5 => {
             world = scenes::cornell_box::build_scene();
             aspect_ratio = 1.0;
@@ -68,30 +69,38 @@ fn main() {
             lookat = Point3::new(278.0, 278.0, 0.0);
             vfov = 40.0;
         },
-        6 => {
-            world = scenes::cornell_smoke::build_scene();
-            aspect_ratio = 1.0;
-            image_width = 400;
-            samples_per_pixel = 100;
-            background_colour = Colour::zero();
+        // 6 => {
+        //     world = scenes::cornell_smoke::build_scene();
+        //     aspect_ratio = 1.0;
+        //     image_width = 400;
+        //     samples_per_pixel = 100;
+        //     background_colour = Colour::zero();
 
-            lookfrom = Point3::new(278.0, 278.0, -800.0);
-            lookat = Point3::new(278.0, 278.0, 0.0);
-            vfov = 40.0;
+        //     lookfrom = Point3::new(278.0, 278.0, -800.0);
+        //     lookat = Point3::new(278.0, 278.0, 0.0);
+        //     vfov = 40.0;
+        // },
+        // 7 => {
+        //     world = scenes::final_scene::build_scene();
+        //     aspect_ratio = 1.0;
+        //     image_width = 400;
+        //     samples_per_pixel = 100;
+        //     background_colour = Colour::zero();
+        //     time = 0.0..1.0;
+        //     lookfrom = Point3::new(478.0, 278.0, -600.0);
+        //     lookat = Point3::new(278.0, 278.0, 0.0);
+        //     vfov = 40.0;
+        // },
+        8 => {
+            world = scenes::random_scene::build_scene();
+            lookfrom = Point3::new(13.0, 2.0, 3.0);
+            lookat = Point3::zero();
+            vfov = 20.0;
+            aperture = 0.1;
+            time = 0.0..0.0;
         },
-        7 => {
-            world = scenes::final_scene::build_scene();
-            aspect_ratio = 1.0;
-            image_width = 400;
-            samples_per_pixel = 100;
-            background_colour = Colour::zero();
-            time = 0.0..1.0;
-            lookfrom = Point3::new(478.0, 278.0, -600.0);
-            lookat = Point3::new(278.0, 278.0, 0.0);
-            vfov = 40.0;
-        }
         _ => {
-            world = HittableList::new();
+            
             lookfrom = Point3::new(13.0, 2.0, 3.0);
             lookat = Point3::zero();
             vfov = 20.0;
@@ -106,7 +115,7 @@ fn main() {
     let scene = Scene::new(cam, world, background_colour);
 
     // Render
-    let renderer = Renderer::new(samples_per_pixel, max_depth, true);
+    let renderer = Renderer::new(samples_per_pixel, max_depth, multithreading);
 
     let img = renderer.render(&scene, (image_width  as f64 / aspect_ratio) as u32, image_width);
 

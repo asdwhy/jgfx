@@ -2,7 +2,15 @@ use std::sync::Arc;
 
 use jgfxlib::{
     hittables::{
-        hittable_list::HittableList, aa_rectangles::{yz_rect::YzRectangle, xz_rect::XzRectangle, xy_rect::XyRectangle}, rect_prism::RectangularPrism, translate::Translate, Hittable, rotate_y::RotateY, bvh::BvhNode
+        hittable_list::HittableList, 
+        aa_rectangles::{
+            yz_rect::YzRectangle, 
+            xz_rect::XzRectangle, 
+            xy_rect::XyRectangle
+        }, 
+        rect_prism::RectangularPrism, 
+        Hittable,
+        bvh::BvhNode
     }, 
     materials::{
         lambertian::Lambertian, diffuse_light::DiffuseLight
@@ -28,13 +36,13 @@ pub fn build_scene() -> HittableList {
 
     // boxes
     let mut b: Arc<dyn Hittable> = Arc::new(RectangularPrism::new(Point3::zero(), Point3::new(165.0, 330.0, 165.0), white.clone()));
-    b = Arc::new(RotateY::new(b, 15.0));
-    b = Arc::new(Translate::new(b, Point3::new(265.0, 0.0, 295.0)));
+    // b = Arc::new(RotateY::new(b, 15.0));
+    // b = Arc::new(Translate::new(b, Point3::new(265.0, 0.0, 295.0)));
     objects.add(b);
 
     let mut b: Arc<dyn Hittable> = Arc::new(RectangularPrism::new(Point3::zero(), Point3::from_value(165.0), white.clone()));
-    b = Arc::new(RotateY::new(b, -18.0));
-    b = Arc::new(Translate::new(b, Point3::new(130.0, 0.0, 65.0)));
+    // b = Arc::new(RotateY::new(b, -18.0));
+    // b = Arc::new(Translate::new(b, Point3::new(130.0, 0.0, 65.0)));
     objects.add(b);
 
     // objects

@@ -7,13 +7,14 @@ use crate::{
     colour::Colour, 
     aabb::AABB, 
     ray::Ray,
-    vec3::Vec3
+    vec3::Vec3, affine::Affine
 };
 
 pub struct ConstantMedium {
     boundary: Arc<dyn Hittable>,
     phase_function: Arc<dyn Material>,
-    neg_inv_density: f64
+    neg_inv_density: f64,
+    transform: Affine
 }
 
 impl ConstantMedium {
@@ -21,7 +22,8 @@ impl ConstantMedium {
         Self {
             boundary: obj.clone(),
             phase_function: Arc::new(Isotropic::new(colour)),
-            neg_inv_density: -1.0/density
+            neg_inv_density: -1.0/density,
+            transform: Affine::new()
         }
     }
 
@@ -29,13 +31,14 @@ impl ConstantMedium {
         Self {
             boundary: obj.clone(),
             phase_function: Arc::new(Isotropic::from_texture(texture)),
-            neg_inv_density: -1.0/density
+            neg_inv_density: -1.0/density,
+            transform: Affine::new()
         }
     }
 }
 
 impl Hittable for ConstantMedium {
-    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn canonical_intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut rec1 = if let Some(rec) = self.boundary.intersect(rng, r, NEG_INFINITY, INFINITY) { rec } else {
             return None;
         };
@@ -76,5 +79,9 @@ impl Hittable for ConstantMedium {
 
     fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
         self.boundary.bounding_box(time)
+    }
+
+    fn get_transformation(&self) -> &Affine {
+        &self.transform
     }
 }

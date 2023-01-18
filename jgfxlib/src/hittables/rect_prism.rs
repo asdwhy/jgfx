@@ -9,7 +9,7 @@ use crate::{
         hittable_list::HittableList, 
         aa_rectangles::{xy_rect::XyRectangle, xz_rect::XzRectangle, yz_rect::YzRectangle}, 
         Hittable
-    }
+    }, affine::Affine
 };
 
 use super::HitRecord;
@@ -19,7 +19,8 @@ pub struct RectangularPrism {
     // corners of the prism
     min: Point3,
     max: Point3,
-    sides: HittableList
+    sides: HittableList,
+    transform: Affine
 }
 
 impl RectangularPrism {
@@ -38,17 +39,22 @@ impl RectangularPrism {
         Self {
             min: p0,
             max: p1,
-            sides
+            sides,
+            transform: Affine::new()
         }
     }
 }
 
 impl Hittable for RectangularPrism {
-    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
-        self.sides.intersect(rng, r, t_min, t_max)
-    }
-
     fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
         Some(AABB::new(self.min, self.max))
+    }
+
+    fn get_transformation(&self) -> &Affine {
+        &self.transform
+    }
+
+    fn canonical_intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+        self.sides.intersect(rng, r, t_min, t_max)
     }
 }
