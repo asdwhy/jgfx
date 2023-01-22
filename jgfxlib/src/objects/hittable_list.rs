@@ -4,14 +4,14 @@ use rand::rngs::SmallRng;
 use crate::{
     aabb::{AABB, surrounding_box},
     ray::Ray,
-    hittables::{HitRecord, Hittable}
+    objects::{Intersection, Object}
 };
 
-pub struct HittableList {
-    pub objects: Vec<Arc<dyn Hittable>>
+pub struct ObjectList {
+    pub objects: Vec<Arc<dyn Object>>
 }
 
-impl HittableList {
+impl ObjectList {
     /// Create hittable object that is composed of multiple hittable objects. Implemented as a list.
     pub fn new() -> Self where Self: Sized {
         Self {
@@ -20,7 +20,7 @@ impl HittableList {
     }
 
     /// Add object to this hittable list
-    pub fn add(&mut self, hittable: Arc<dyn Hittable>) {
+    pub fn add(&mut self, hittable: Arc<dyn Object>) {
         self.objects.push(hittable.clone());
     }
 
@@ -28,11 +28,9 @@ impl HittableList {
     pub fn clear(&mut self) {
         self.objects.clear();
     }
-
-    
 }
 
-impl Hittable for HittableList {
+impl Object for ObjectList {
     fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
         if self.objects.is_empty() {
             return None
@@ -56,8 +54,8 @@ impl Hittable for HittableList {
     }
 
     /// Computes intersection of given ray with canonical list
-    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {        
-        let mut ret: Option<HitRecord> = None;
+    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {        
+        let mut ret: Option<Intersection> = None;
         let mut closest_t = t_max;
 
         for obj in self.objects.iter() {

@@ -1,6 +1,6 @@
 use rand::{Rng, rngs::SmallRng};
 use crate::{
-    hittables::HitRecord,
+    objects::Intersection,
     materials::Material,
     ray::Ray,
     colour::Colour,
@@ -29,7 +29,7 @@ impl Dialetric {
 
 impl Material for Dialetric {
     // Returns (attenuation, scattered_ray) as an option
-    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
+    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &Intersection) -> Option<(Colour, Ray)> {
         let attenuation = Colour::new(1.0, 1.0, 1.0);
         let refraction_ratio = if rec.front_face { 1.0 / self.ir } else { self.ir };
 

@@ -5,7 +5,7 @@ use crate::{
        solid_colour::SolidColour}, 
        colour::Colour, 
        ray::Ray, 
-       hittables::HitRecord, 
+       objects::Intersection, 
        random::random_in_unit_sphere,
        materials::Material
 };
@@ -30,7 +30,7 @@ impl Isotropic {
 }
 
 impl Material for Isotropic {
-    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
+    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &Intersection) -> Option<(Colour, Ray)> {
 
         let scattered = Ray::new(rec.p, random_in_unit_sphere(rng), ray_in.time);
         let attenuation = self.albedo.value(rec.u, rec.v, &rec.p);

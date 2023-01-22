@@ -1,7 +1,7 @@
 mod scenes;
 
 use jgfxlib::colour::Colour;
-use jgfxlib::hittables::hittable_list::{HittableList};
+use jgfxlib::objects::hittable_list::{ObjectList};
 use jgfxlib::{camera::Camera};
 use jgfxlib::vec3::Vec3;
 use jgfxlib::scene::{Scene};
@@ -18,11 +18,11 @@ fn main() {
     // Image
     let mut aspect_ratio = 16.0/9.0;
     let mut image_width = 1200 as u32;
-    let mut samples_per_pixel = 32;
+    let mut samples_per_pixel = 200;
     let max_depth = 8;
 
     // World
-    let mut world = HittableList::new();
+    let mut world = ObjectList::new();
     let lookfrom: Point3;
     let lookat: Point3;
     let vfov: f64;

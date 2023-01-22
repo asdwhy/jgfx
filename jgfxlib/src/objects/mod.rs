@@ -8,7 +8,7 @@ use crate::{
     aabb::AABB
 };
 
-pub struct HitRecord {
+pub struct Intersection {
     pub p: Point3,                      // point of intersection
     pub n: Vec3,                        // normal at point of intersection
     pub t: f64,                         // distance ray travelled
@@ -17,7 +17,7 @@ pub struct HitRecord {
     pub u: f64, pub v: f64              // texture u-v coordinates
 }
 
-impl HitRecord {
+impl Intersection {
     pub fn new(t: f64, p: Point3, n: Vec3, material: &Arc<dyn Material>, u: f64, v: f64) -> Self {
         Self {
             t, p, n,
@@ -37,10 +37,10 @@ impl HitRecord {
     }
 }
 
-pub trait Hittable: Send + Sync {
+pub trait Object: Send + Sync {
     fn bounding_box(&self, time: Range<f64>) -> Option<AABB>;
 
-    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
+    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection>;
 }
 
 pub mod hittable_list;

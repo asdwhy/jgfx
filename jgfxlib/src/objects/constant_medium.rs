@@ -1,7 +1,7 @@
 use std::{sync::Arc, ops::Range, f64::{NEG_INFINITY, INFINITY}};
 use rand::{rngs::SmallRng, Rng};
 use crate::{
-    hittables::{Hittable, HitRecord},
+    objects::{Object, Intersection},
     materials::{Material, isotropic::Isotropic}, 
     textures::Texture, 
     colour::Colour, 
@@ -11,14 +11,14 @@ use crate::{
 };
 
 pub struct ConstantMedium {
-    boundary: Arc<dyn Hittable>,
+    boundary: Arc<dyn Object>,
     phase_function: Arc<dyn Material>,
     neg_inv_density: f64
 }
 
 impl ConstantMedium {
-    /// Create a constant medium with boundary given as passed Hittable with given density and colour
-    pub fn new(obj: Arc<dyn Hittable>, density: f64, colour: Colour) -> Self {
+    /// Create a constant medium with boundary given as passed Object with given density and colour
+    pub fn new(obj: Arc<dyn Object>, density: f64, colour: Colour) -> Self {
         Self {
             boundary: obj.clone(),
             phase_function: Arc::new(Isotropic::new(colour)),
@@ -26,8 +26,8 @@ impl ConstantMedium {
         }
     }
 
-    /// Create a constant medium with boundary given as passed Hittable with given density and colour chosen from a texture
-    pub fn from_texture(obj: Arc<dyn Hittable>, density: f64, texture: Arc<dyn Texture>) -> Self {
+    /// Create a constant medium with boundary given as passed Object with given density and colour chosen from a texture
+    pub fn from_texture(obj: Arc<dyn Object>, density: f64, texture: Arc<dyn Texture>) -> Self {
         Self {
             boundary: obj.clone(),
             phase_function: Arc::new(Isotropic::from_texture(texture)),
@@ -36,12 +36,12 @@ impl ConstantMedium {
     }
 }
 
-impl Hittable for ConstantMedium {
+impl Object for ConstantMedium {
     fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
         self.boundary.bounding_box(time)
     }
 
-    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {
         let mut rec1 = if let Some(rec) = self.boundary.intersect(rng, r, NEG_INFINITY, INFINITY) { rec } else {
             return None;
         };
@@ -74,7 +74,7 @@ impl Hittable for ConstantMedium {
 
         let n = Vec3::new(1.0,0.0,0.0);
 
-        let mut rec = HitRecord::new(t, p, n, &self.phase_function, 0.0, 0.0);
+        let mut rec = Intersection::new(t, p, n, &self.phase_function, 0.0, 0.0);
         rec.set_face_normal(r); // arbitrary decision
 
         Some(rec)

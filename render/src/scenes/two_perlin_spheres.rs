@@ -2,7 +2,7 @@
 
 // use jgfxlib::{
 //     hittables::{
-//         hittable_list::HittableList, sphere::Sphere
+//         hittable_list::ObjectList, sphere::Sphere
 //     }, 
 //     textures::{noise_texture::NoiseTexture}, 
 //     materials::{
@@ -11,8 +11,8 @@
 //     point3::Point3
 // };
 
-// pub fn build_scene() -> HittableList {
-//     let mut world = HittableList::new();
+// pub fn build_scene() -> ObjectList {
+//     let mut world = ObjectList::new();
 
 //     let perlin_texture = Arc::new(NoiseTexture::new(4.0));
 //     let mat = Arc::new(Lambertian::from_texture(perlin_texture));

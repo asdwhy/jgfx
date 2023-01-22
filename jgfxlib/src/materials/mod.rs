@@ -2,7 +2,7 @@ use rand::rngs::SmallRng;
 
 use crate::{
     ray::Ray, 
-    hittables::HitRecord, 
+    objects::Intersection, 
     colour::Colour, 
     point3::Point3
 };
@@ -10,7 +10,7 @@ use crate::{
 #[allow(unused)]
 pub trait Material: Send + Sync {
     /// Returns (attenuation, scattered_ray) as an option
-    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)>;
+    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &Intersection) -> Option<(Colour, Ray)>;
 
     /// Returns emitted colour from this material.
     /// defaults to black for all materials

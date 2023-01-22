@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use jgfxlib::{
-    hittables::{
-        hittable_list::HittableList,
+    objects::{
+        hittable_list::ObjectList,
         sphere::Sphere, 
         affine::Affine
     }, 
@@ -13,8 +13,8 @@ use jgfxlib::{
     }, point3::Point3
 };
 
-pub fn build_scene() -> HittableList {
-    let mut world = HittableList::new();
+pub fn build_scene() -> ObjectList {
+    let mut world = ObjectList::new();
 
     let checker = Arc::new(CheckerTexture::new(Colour::new(0.2, 0.3, 0.1), Colour::new(0.9, 0.9, 0.9)));
     let mat = Arc::new(Lambertian::from_texture(checker));
@@ -35,7 +35,7 @@ pub fn build_scene() -> HittableList {
 
     world
 
-    // let mut world = HittableList::new();
+    // let mut world = ObjectList::new();
 
     // let checker = Arc::new(CheckerTexture::new(Colour::new(0.2, 0.3, 0.1), Colour::new(0.9, 0.9, 0.9)));
     // let mat = Arc::new(Lambertian::from_texture(checker));

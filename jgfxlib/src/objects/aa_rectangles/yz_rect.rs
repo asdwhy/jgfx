@@ -8,7 +8,7 @@ use crate::{
     point3::Point3, 
     ray::Ray, 
     vec3::Vec3,
-    hittables::{Hittable, HitRecord}
+    objects::{Object, Intersection}
 };
 
 pub struct YzRectangle {
@@ -35,7 +35,7 @@ impl YzRectangle {
     }
 }
 
-impl Hittable for YzRectangle {
+impl Object for YzRectangle {
     fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
         // The bounding box must have non-zero width in each dimension, so pad the Z
         // dimension a small amount
@@ -46,7 +46,7 @@ impl Hittable for YzRectangle {
         ))
     }
 
-    fn intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {
         let t = (self.x - r.origin.x) / r.dir.x;
 
         if t < t_min || t > t_max {
@@ -65,7 +65,7 @@ impl Hittable for YzRectangle {
         let outward_normal = Vec3::new(1.0,0.0,0.0);
         let p = r.at(t);
 
-        let mut rec = HitRecord::new(t, p, outward_normal, &self.material, uv.0, uv.1);
+        let mut rec = Intersection::new(t, p, outward_normal, &self.material, uv.0, uv.1);
         rec.set_face_normal(r);
         
         Some(rec)

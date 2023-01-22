@@ -5,21 +5,21 @@ use rand::rngs::SmallRng;
 use crate::{
     vec3::Vec3, 
     ray::Ray, 
-    hittables::{HitRecord, Hittable}, 
+    objects::{Intersection, Object}, 
     point3::Point3, aabb::AABB
 };
 
 /// Affine transformations
 pub struct Affine {
-    object: Arc<dyn Hittable>,
+    object: Arc<dyn Object>,
     transformed: bool,          // flag to denote non identity transform
     mat_t: Matrix4<f64>,        // note these matrices are stored as column vectors!
     mat_t_inv: Matrix4<f64>
 }
 
 impl Affine {
-    /// Create affinely transformable object given by passed Hittable
-    pub fn new(object: Arc<dyn Hittable>) -> Self {
+    /// Create affinely transformable object given by passed Object
+    pub fn new(object: Arc<dyn Object>) -> Self {
         Self {
             object: object.clone(),
             transformed: false,
@@ -52,7 +52,7 @@ impl Affine {
         Ray::new(origin, dir, r.time.clone())
     }
 
-    fn hitrec_transform(&self, rec: &mut HitRecord, r: &Ray) {
+    fn hitrec_transform(&self, rec: &mut Intersection, r: &Ray) {
         rec.p = r.at(rec.t);
         rec.n = Self::normal_transform(&self, &rec.n);
     }
@@ -156,7 +156,7 @@ impl Affine {
     }
 }
 
-impl Hittable for Affine {
+impl Object for Affine {
     fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
         match self.object.bounding_box(time) {
             Some(bbox) => {
@@ -170,7 +170,7 @@ impl Hittable for Affine {
         }
     }
 
-    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {
         let rt = self.inverse_ray_transform(r);
         return match self.object.intersect(rng, &rt, t_min, t_max) {
             Some(mut rec) => {

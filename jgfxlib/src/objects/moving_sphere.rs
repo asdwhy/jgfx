@@ -6,7 +6,7 @@ use crate::{
     materials::Material,
     ray::Ray,
     utils::in_range,
-    hittables::{Hittable, HitRecord},
+    objects::{Object, Intersection},
     vec3::Vec3
 };
 
@@ -38,7 +38,7 @@ impl MovingSphere {
     }
 }
 
-impl Hittable for MovingSphere {
+impl Object for MovingSphere {
     fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
         let box0 = AABB::new(
             self.get_origin(time.start) - Vec3::new(self.radius, self.radius, self.radius),
@@ -53,7 +53,7 @@ impl Hittable for MovingSphere {
         Some(surrounding_box(box0, box1))
     }
 
-    fn intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {
         let oc = &r.origin - self.get_origin(r.time);
         let a = r.dir.length_squared();
         let half_b = oc.dot(&r.dir);
@@ -81,7 +81,7 @@ impl Hittable for MovingSphere {
         let n = (&p - self.get_origin(r.time)) / self.radius;
         let uv = get_sphere_uv(&n);
 
-        let mut rec = HitRecord::new(t, p, n, &self.material, uv.0, uv.1);
+        let mut rec = Intersection::new(t, p, n, &self.material, uv.0, uv.1);
         rec.set_face_normal(r);
 
         Some(rec)

@@ -1,6 +1,6 @@
 use rand::rngs::SmallRng;
 use crate::{
-    hittables::HitRecord,
+    objects::Intersection,
     materials::Material,
     random::random_in_unit_sphere,
     colour::Colour,
@@ -25,7 +25,7 @@ impl Metal {
 
 impl Material for Metal {
     // Returns (attenuation, scattered_ray) as an option
-    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &HitRecord) -> Option<(Colour, Ray)> {
+    fn scatter(&self, rng: &mut SmallRng, ray_in: Ray, rec: &Intersection) -> Option<(Colour, Ray)> {
         let reflected_dir = ray_in.dir.normalized().reflect(&rec.n);
 
         let scattered = Ray::new(rec.p.clone(), &reflected_dir + self.fuzzy*random_in_unit_sphere(rng), ray_in.time);

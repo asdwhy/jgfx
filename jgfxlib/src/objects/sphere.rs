@@ -6,7 +6,7 @@ use crate::{
     point3::Point3,
     ray::Ray,
     utils::in_range,
-    hittables::{HitRecord, Hittable}, 
+    objects::{Intersection, Object}, 
 };
 
 pub struct Sphere {
@@ -31,12 +31,12 @@ impl Sphere {
     }
 }
 
-impl Hittable for Sphere {
+impl Object for Sphere {
     fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
         Some(AABB::new(Point3::from_value(-1.0), Point3::from_value(1.0)))
     }
 
-    fn intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {
         let oc = &r.origin;
         let a = r.dir.length_squared();
         let half_b = oc.dot(&r.dir);
@@ -65,7 +65,7 @@ impl Hittable for Sphere {
         let uv = Self::get_sphere_uv(&p);
         let n = 2.0 * p;
         
-        let mut rec = HitRecord::new(t, p, n, &self.material, uv.0, uv.1);
+        let mut rec = Intersection::new(t, p, n, &self.material, uv.0, uv.1);
 
         rec.set_face_normal(&r);
         

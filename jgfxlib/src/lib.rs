@@ -1,7 +1,7 @@
 pub mod vec3;
 pub mod colour;
 pub mod camera;
-pub mod hittables;
+pub mod objects;
 pub mod scene;
 pub mod renderer;
 pub mod materials;

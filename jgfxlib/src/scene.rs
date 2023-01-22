@@ -1,17 +1,17 @@
 use crate::{
     colour::Colour,
-    hittables::{hittable_list::HittableList},
+    objects::{hittable_list::ObjectList},
     camera::Camera
 };
 
 pub struct Scene {
-    pub objects: HittableList,
+    pub objects: ObjectList,
     pub camera: Camera,
     pub background_colour: Colour
 }
 
 impl Scene {
-    pub fn new(camera: Camera, objects: HittableList, background_colour: Colour) -> Self {
+    pub fn new(camera: Camera, objects: ObjectList, background_colour: Colour) -> Self {
         Self {
             camera,
             objects,

@@ -2,14 +2,14 @@
 
 // use jgfxlib::{
 //     hittables::{
-//         hittable_list::HittableList, 
+//         hittable_list::ObjectList, 
 //         aa_rectangles::{
 //             yz_rect::YzRectangle, 
 //             xz_rect::XzRectangle, 
 //             xy_rect::XyRectangle
 //         }, 
 //         rect_prism::RectangularPrism, 
-//         Hittable, 
+//         Object, 
 //         bvh::BvhNode, 
 //         constant_medium::ConstantMedium
 //     }, 
@@ -19,8 +19,8 @@
 //     colour::Colour, point3::Point3
 // };
 
-// pub fn build_scene() -> HittableList {
-//     let mut objects = HittableList::new();
+// pub fn build_scene() -> ObjectList {
+//     let mut objects = ObjectList::new();
 
 //     let red = Arc::new(Lambertian::new(Colour::new(0.65, 0.05, 0.05)));
 //     let white = Arc::new(Lambertian::new(Colour::new(0.73, 0.73, 0.73)));
@@ -36,12 +36,12 @@
 //     objects.add(Arc::new(XyRectangle::new(0.0, 555.0, 0.0, 555.0, 555.0, white.clone())));
 
 //     // boxes
-//     let mut b: Arc<dyn Hittable> = Arc::new(RectangularPrism::new(Point3::zero(), Point3::new(165.0, 330.0, 165.0), white.clone()));
+//     let mut b: Arc<dyn Object> = Arc::new(RectangularPrism::new(Point3::zero(), Point3::new(165.0, 330.0, 165.0), white.clone()));
 //     // b = Arc::new(RotateY::new(b, 15.0));
 //     // b = Arc::new(Translate::new(b, Point3::new(265.0, 0.0, 295.0)));
 //     objects.add(Arc::new(ConstantMedium::new(b, 0.01, Colour::zero())));
 
-//     let mut b: Arc<dyn Hittable> = Arc::new(RectangularPrism::new(Point3::zero(), Point3::from_value(165.0), white.clone()));
+//     let mut b: Arc<dyn Object> = Arc::new(RectangularPrism::new(Point3::zero(), Point3::from_value(165.0), white.clone()));
 //     // b = Arc::new(RotateY::new(b, -18.0));
 //     // b = Arc::new(Translate::new(b, Point3::new(130.0, 0.0, 65.0)));
 //     objects.add(Arc::new(ConstantMedium::new(b, 0.01, Colour::from_value(1.0))));
@@ -49,7 +49,7 @@
 //     // objects
 
 //     let bvh = Arc::new(BvhNode::new(objects, 0.0..0.0));
-//     let mut world = HittableList::new();
+//     let mut world = ObjectList::new();
 //     world.add(bvh);
 
 //     world
