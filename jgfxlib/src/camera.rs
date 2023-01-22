@@ -58,6 +58,7 @@ impl Camera {
         }
     }
 
+    // get new ray to trace from this camera
     pub fn get_ray(&self, rng: &mut SmallRng, s: f64, t: f64) -> Ray {
         let origin: Point3;
         let dir: Vec3;

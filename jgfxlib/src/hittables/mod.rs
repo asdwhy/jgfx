@@ -38,8 +38,9 @@ impl HitRecord {
 }
 
 pub trait Hittable: Send + Sync {
-    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
     fn bounding_box(&self, time: Range<f64>) -> Option<AABB>;
+
+    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
 }
 
 pub mod hittable_list;
@@ -48,6 +49,5 @@ pub mod moving_sphere;
 pub mod bvh;
 pub mod aa_rectangles;
 pub mod rect_prism;
-pub mod translate;
-pub mod rotate_y;
 pub mod constant_medium;
+pub mod affine;

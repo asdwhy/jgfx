@@ -17,6 +17,7 @@ pub struct ConstantMedium {
 }
 
 impl ConstantMedium {
+    /// Create a constant medium with boundary given as passed Hittable with given density and colour
     pub fn new(obj: Arc<dyn Hittable>, density: f64, colour: Colour) -> Self {
         Self {
             boundary: obj.clone(),
@@ -25,6 +26,7 @@ impl ConstantMedium {
         }
     }
 
+    /// Create a constant medium with boundary given as passed Hittable with given density and colour chosen from a texture
     pub fn from_texture(obj: Arc<dyn Hittable>, density: f64, texture: Arc<dyn Texture>) -> Self {
         Self {
             boundary: obj.clone(),
@@ -35,6 +37,10 @@ impl ConstantMedium {
 }
 
 impl Hittable for ConstantMedium {
+    fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
+        self.boundary.bounding_box(time)
+    }
+
     fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut rec1 = if let Some(rec) = self.boundary.intersect(rng, r, NEG_INFINITY, INFINITY) { rec } else {
             return None;
@@ -72,9 +78,5 @@ impl Hittable for ConstantMedium {
         rec.set_face_normal(r); // arbitrary decision
 
         Some(rec)
-    }
-
-    fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
-        self.boundary.bounding_box(time)
     }
 }

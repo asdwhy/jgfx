@@ -16,6 +16,7 @@ pub struct BvhNode {
 }
 
 impl BvhNode {
+    /// Create BVH tree from given HittableList
     pub fn new(list: HittableList, time: Range<f64>) -> Self {
         let mut list = list;
         let len = list.objects.len();
@@ -87,6 +88,10 @@ impl BvhNode {
 
 
 impl Hittable for BvhNode {
+    fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
+        Some(self.bounding_box.clone())
+    }
+
     fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         if !self.bounding_box.intersect(r, t_min, t_max) {
             return None;
@@ -111,9 +116,5 @@ impl Hittable for BvhNode {
         } else {
             return None;
         }
-    }
-
-    fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
-        Some(self.bounding_box.clone())
     }
 }

@@ -8,40 +8,31 @@ use crate::{
 };
 
 pub struct HittableList {
-    pub objects: Vec<Arc<dyn Hittable>>,
+    pub objects: Vec<Arc<dyn Hittable>>
 }
 
 impl HittableList {
+    /// Create hittable object that is composed of multiple hittable objects. Implemented as a list.
     pub fn new() -> Self where Self: Sized {
         Self {
             objects: vec![]
         }
     }
 
+    /// Add object to this hittable list
     pub fn add(&mut self, hittable: Arc<dyn Hittable>) {
         self.objects.push(hittable.clone());
     }
 
+    /// Clear this hittable list
     pub fn clear(&mut self) {
         self.objects.clear();
     }
+
+    
 }
 
 impl Hittable for HittableList {
-    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
-        let mut ret: Option<HitRecord> = None;
-        let mut closest_t = t_max;
-
-        for obj in self.objects.iter() {
-            if let Some(rec) = obj.intersect(rng, r, t_min, closest_t) {
-                closest_t = rec.t;
-                ret = Some(rec);
-            }
-        }
-
-        ret
-    }
-
     fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
         if self.objects.is_empty() {
             return None
@@ -62,5 +53,20 @@ impl Hittable for HittableList {
         }
 
         output_box
+    }
+
+    /// Computes intersection of given ray with canonical list
+    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {        
+        let mut ret: Option<HitRecord> = None;
+        let mut closest_t = t_max;
+
+        for obj in self.objects.iter() {
+            if let Some(rec) = obj.intersect(rng, r, t_min, closest_t) {
+                closest_t = rec.t;
+                ret = Some(rec);
+            }
+        }
+
+        ret
     }
 }

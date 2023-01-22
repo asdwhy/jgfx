@@ -17,21 +17,37 @@ pub struct YzRectangle {
     y1: f64,
     z0: f64,
     z1: f64,
-    k: f64
+    x: f64
 }
 
 impl YzRectangle {
-    pub fn new(y0: f64, y1: f64, z0: f64, z1: f64, k: f64, material: Arc<dyn Material>) -> Self {
+    /// Create rectangle defined by corners P0(x, y0, z0), P1(x, y1, z1)
+    pub fn new(y0: f64, y1: f64, z0: f64, z1: f64, x: f64, material: Arc<dyn Material>) -> Self {
         Self {
-            y0, y1, z0, z1, k,
+            y0, y1, z0, z1, x,
             material: material.clone()
         }
+    }
+
+    /// Create canonical rectangle on Y-Z plane defined by corners P0(0.0, 0.0, 0.0), P1(0.0, 1.0, 1.0) 
+    pub fn canonical(material: Arc<dyn Material>) -> Self {
+        Self::new(0.0, 1.0, 0.0, 1.0, 0.0, material)
     }
 }
 
 impl Hittable for YzRectangle {
+    fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
+        // The bounding box must have non-zero width in each dimension, so pad the Z
+        // dimension a small amount
+
+        Some(AABB::new(
+            Point3::new(self.x-0.0001, self.y0, self.z0), 
+            Point3::new(self.x+0.0001, self.y1, self.z1)
+        ))
+    }
+
     fn intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
-        let t = (self.k - r.origin.x) / r.dir.x;
+        let t = (self.x - r.origin.x) / r.dir.x;
 
         if t < t_min || t > t_max {
             return None;
@@ -53,15 +69,5 @@ impl Hittable for YzRectangle {
         rec.set_face_normal(r);
         
         Some(rec)
-    }
-
-    fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
-        // The bounding box must have non-zero width in each dimension, so pad the Z
-        // dimension a small amount
-
-        Some(AABB::new(
-            Point3::new(self.k-0.0001, self.y0, self.z0), 
-            Point3::new(self.k+0.0001, self.y1, self.z1)
-        ))
     }
 }

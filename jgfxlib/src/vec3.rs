@@ -31,18 +31,6 @@ impl Vec3 {
         }
     }
 
-    /// Creates Vec3 (in cartesian coordinates) from spherical coordinates 
-    /// theta: (angle from y axis) in [0, 2PI]
-    /// azimuth: (angle from z axis) in [0, PI]
-    pub fn from_spherical(rho: f64, theta: f64, azimuth: f64) -> Self {
-        let az_sin = azimuth.sin();
-        Self::new(
-            rho * az_sin * theta.cos(),
-            rho * az_sin * theta.sin(),
-            rho * azimuth.cos()
-        )
-    }
-
     pub fn length(&self) -> f64 {
         f64::sqrt(self.length_squared())
     }

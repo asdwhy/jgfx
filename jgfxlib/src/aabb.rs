@@ -20,26 +20,58 @@ impl AABB {
         }
     }
 
+    // Intersect with axis aligned bounding box
     pub fn intersect(&self, r: &Ray, t_min: f64, t_max: f64) -> bool {
+        // for loop over each dimension is unwrapped for performance
         let mut t_min = t_min;
         let mut t_max = t_max;
 
-        // check if intersect in each dimension
-        for i in 0..3 {
-            let inv_d = 1.0 / r.dir[i];
-            let mut t0 = (self.minimum[i] - r.origin[i]) * inv_d;
-            let mut t1 = (self.maximum[i] - r.origin[i]) * inv_d;
+        // x dim
+        let mut inv_d = 1.0 / r.dir.x;
+        let mut t0 = (self.minimum.x - r.origin.x) * inv_d;
+        let mut t1 = (self.maximum.x - r.origin.x) * inv_d;
 
-            if inv_d < 0.0 {
-                std::mem::swap(&mut t0, &mut t1);
-            }
+        if inv_d < 0.0 {
+            std::mem::swap(&mut t0, &mut t1);
+        }
 
-            t_min = fmax(t0, t_min);
-            t_max = fmin(t1, t_max);
+        t_min = fmax(t0, t_min);
+        t_max = fmin(t1, t_max);
 
-            if t_max <= t_min {
-                return false;
-            }
+        if t_max <= t_min {
+            return false;
+        }
+
+        // y dim
+        inv_d = 1.0 / r.dir.y;
+        t0 = (self.minimum.y - r.origin.y) * inv_d;
+        t1 = (self.maximum.y - r.origin.y) * inv_d;
+
+        if inv_d < 0.0 {
+            std::mem::swap(&mut t0, &mut t1);
+        }
+
+        t_min = fmax(t0, t_min);
+        t_max = fmin(t1, t_max);
+
+        if t_max <= t_min {
+            return false;
+        }
+
+        // z dim
+        inv_d = 1.0 / r.dir.z;
+        t0 = (self.minimum.z - r.origin.z) * inv_d;
+        t1 = (self.maximum.z - r.origin.z) * inv_d;
+
+        if inv_d < 0.0 {
+            std::mem::swap(&mut t0, &mut t1);
+        }
+
+        t_min = fmax(t0, t_min);
+        t_max = fmin(t1, t_max);
+
+        if t_max <= t_min {
+            return false;
         }
 
         return true;

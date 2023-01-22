@@ -1,7 +1,7 @@
 /// Utilities involving randomness
 /*
  NOTE: Random functions where you dont pass an RNG is not meant to be used
- during the actual rendering. These are utility random functions to be used for
+ during the actual rendering. Those are utility random functions to be used for
  actions that are usually done once, like creating objects / materials / textures.
 */ 
 use std::ops::Range;

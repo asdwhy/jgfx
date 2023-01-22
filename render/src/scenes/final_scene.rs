@@ -1,13 +1,11 @@
 // use std::sync::Arc;
-
+// use rand::{rngs::SmallRng, SeedableRng, Rng};
 // use jgfxlib::{
 //     hittables::{
 //         hittable_list::HittableList, aa_rectangles::{
 //             xz_rect::XzRectangle,
 //         }, 
-//         rect_prism::RectangularPrism, 
-//         translate::Translate, 
-//         rotate_y::RotateY, 
+//         rect_prism::RectangularPrism,  
 //         bvh::BvhNode, 
 //         constant_medium::ConstantMedium, 
 //         moving_sphere::MovingSphere,
@@ -18,9 +16,12 @@
 //         diffuse_light::DiffuseLight,
 //         dialetric::Dialetric, metal::Metal
 //     }, 
-//     colour::Colour, point3::Point3, textures::{image_texture::ImageTexture, noise_texture::NoiseTexture}, vec3::Vec3
+//     colour::Colour, 
+//     point3::Point3, 
+//     textures::{image_texture::ImageTexture, noise_texture::NoiseTexture}, 
+//     vec3::Vec3, 
+//     random::random_in_range
 // };
-// use rand::{rngs::SmallRng, SeedableRng, Rng};
 
 // const BOXES_PER_SIDE: i32 = 20;
 
@@ -75,15 +76,15 @@
 //     let white = Arc::new(Lambertian::new(Colour::from_value(0.73)));
 //     let ns = 1000;
 //     for _ in 0..ns {
-//         boxes2.add(Arc::new(Sphere::new(Point3::random_in_range(&mut rng, 0.0, 165.0), 10.0, white.clone())));
+//         boxes2.add(Arc::new(Sphere::new(random_in_range(&mut rng, 0.0, 165.0), 10.0, white.clone())));
 //     }
 
-//     objects.add(Arc::new(
-//         Translate::new(
-//             Arc::new(RotateY::new(Arc::new(BvhNode::new(boxes2, 0.0..1.0)), 15.0)),
-//             Vec3::new(-100.0, 270.0, 395.0)
-//         )
-//     ));
+//     // objects.add(Arc::new(
+//     //     Translate::new(
+//     //         Arc::new(RotateY::new(Arc::new(BvhNode::new(boxes2, 0.0..1.0)), 15.0)),
+//     //         Vec3::new(-100.0, 270.0, 395.0)
+//     //     )
+//     // ));
 
 //     objects
 // }
