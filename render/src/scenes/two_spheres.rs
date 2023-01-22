@@ -2,7 +2,9 @@ use std::sync::Arc;
 
 use jgfxlib::{
     hittables::{
-        hittable_list::HittableList, sphere::Sphere, moving_sphere::MovingSphere
+        hittable_list::HittableList,
+        sphere::Sphere, 
+        affine::Affine
     }, 
     colour::Colour, 
     textures::checker_texture::CheckerTexture, 
@@ -17,17 +19,19 @@ pub fn build_scene() -> HittableList {
     let checker = Arc::new(CheckerTexture::new(Colour::new(0.2, 0.3, 0.1), Colour::new(0.9, 0.9, 0.9)));
     let mat = Arc::new(Lambertian::from_texture(checker));
 
-    let mut sphere = Sphere::new(mat.clone());
-    sphere.transform.scale_uniform(10.0);
-    sphere.transform.translate(0.0, -10.0, 0.0);
-    sphere.transform.set_inverse();
-    world.add(Arc::new(sphere));
+    let sphere = Sphere::new(mat.clone());
+    let mut transform = Affine::new(Arc::new(sphere));
+    transform.scale_uniform(10.0);
+    transform.translate(0.0, -10.0, 0.0);
+    transform.set_inverse();
+    world.add(Arc::new(transform));
 
-    let mut sphere = Sphere::new(mat.clone());
-    sphere.transform.scale_uniform(10.0);
-    sphere.transform.translate(0.0, 10.0, 0.0);
-    sphere.transform.set_inverse();
-    world.add(Arc::new(sphere));
+    let sphere = Sphere::new(mat.clone());
+    let mut transform = Affine::new(Arc::new(sphere));
+    transform.scale_uniform(10.0);
+    transform.translate(0.0, 10.0, 0.0);
+    transform.set_inverse();
+    world.add(Arc::new(transform));
 
     world
 

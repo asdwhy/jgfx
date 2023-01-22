@@ -7,38 +7,41 @@ use crate::{
     colour::Colour, 
     aabb::AABB, 
     ray::Ray,
-    vec3::Vec3, affine::Affine
+    vec3::Vec3
 };
 
 pub struct ConstantMedium {
     boundary: Arc<dyn Hittable>,
     phase_function: Arc<dyn Material>,
-    neg_inv_density: f64,
-    transform: Affine
+    neg_inv_density: f64
 }
 
 impl ConstantMedium {
+    /// Create a constant medium with boundary given as passed Hittable with given density and colour
     pub fn new(obj: Arc<dyn Hittable>, density: f64, colour: Colour) -> Self {
         Self {
             boundary: obj.clone(),
             phase_function: Arc::new(Isotropic::new(colour)),
-            neg_inv_density: -1.0/density,
-            transform: Affine::new()
+            neg_inv_density: -1.0/density
         }
     }
 
+    /// Create a constant medium with boundary given as passed Hittable with given density and colour chosen from a texture
     pub fn from_texture(obj: Arc<dyn Hittable>, density: f64, texture: Arc<dyn Texture>) -> Self {
         Self {
             boundary: obj.clone(),
             phase_function: Arc::new(Isotropic::from_texture(texture)),
-            neg_inv_density: -1.0/density,
-            transform: Affine::new()
+            neg_inv_density: -1.0/density
         }
     }
 }
 
 impl Hittable for ConstantMedium {
-    fn canonical_intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
+        self.boundary.bounding_box(time)
+    }
+
+    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let mut rec1 = if let Some(rec) = self.boundary.intersect(rng, r, NEG_INFINITY, INFINITY) { rec } else {
             return None;
         };
@@ -75,13 +78,5 @@ impl Hittable for ConstantMedium {
         rec.set_face_normal(r); // arbitrary decision
 
         Some(rec)
-    }
-
-    fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
-        self.boundary.bounding_box(time)
-    }
-
-    fn get_transformation(&self) -> &Affine {
-        &self.transform
     }
 }

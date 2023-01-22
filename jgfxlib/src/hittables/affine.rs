@@ -1,30 +1,35 @@
+use std::{sync::Arc, ops::Range};
+
 use nalgebra::{Vector4, Matrix4};
+use rand::rngs::SmallRng;
 use crate::{
     vec3::Vec3, 
-    ray::Ray, hittables::HitRecord, point3::Point3
+    ray::Ray, 
+    hittables::{HitRecord, Hittable}, 
+    point3::Point3, aabb::AABB
 };
+
 /// Affine transformations
 pub struct Affine {
+    object: Arc<dyn Hittable>,
     transformed: bool,          // flag to denote non identity transform
     mat_t: Matrix4<f64>,        // note these matrices are stored as column vectors!
     mat_t_inv: Matrix4<f64>
 }
 
 impl Affine {
-    pub fn new() -> Self {
+    /// Create affinely transformable object given by passed Hittable
+    pub fn new(object: Arc<dyn Hittable>) -> Self {
         Self {
+            object: object.clone(),
             transformed: false,
             mat_t: Matrix4::identity(),
             mat_t_inv: Matrix4::identity(),
         }
+
     }
 
-    /// Returns true if this affine transformation does nothing (is identity transform)
-    pub fn is_identity(&self) -> bool {
-        !self.transformed
-    }
-
-    pub fn inverse_ray_transform(&self, r: &Ray) -> Ray {
+    fn inverse_ray_transform(&self, r: &Ray) -> Ray {
         let origin = Vector4::new(r.origin.x, r.origin.y, r.origin.z, 1.0);
         let o = self.mat_t_inv * origin;
         
@@ -47,13 +52,12 @@ impl Affine {
         Ray::new(origin, dir, r.time.clone())
     }
 
-    pub fn hitrec_transform(&self, rec: &mut HitRecord, r: &Ray) {
+    fn hitrec_transform(&self, rec: &mut HitRecord, r: &Ray) {
         rec.p = r.at(rec.t);
         rec.n = Self::normal_transform(&self, &rec.n);
-        // rec.set_face_normal(r);
     }
 
-    pub fn normal_transform(&self, n: &Vec3) -> Vec3 {
+    fn normal_transform(&self, n: &Vec3) -> Vec3 {
         let mat = self.mat_t_inv.data.0;
         
         Vec3::new(
@@ -63,7 +67,7 @@ impl Affine {
         ).normalized()
     }
 
-    pub fn point_transform(&self, p: &Point3) -> Point3 {
+    fn point_transform(&self, p: &Point3) -> Point3 {
         let p_ = Vector4::new(p.x, p.y, p.z, 1.0);
         let o = self.mat_t * p_;
         Point3::new(o.x, o.y, o.z)
@@ -149,5 +153,31 @@ impl Affine {
         );
 
         self.mat_t = mt * self.mat_t
+    }
+}
+
+impl Hittable for Affine {
+    fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
+        match self.object.bounding_box(time) {
+            Some(bbox) => {
+                // transform box according to affine transformation
+                Some(AABB::new(
+                    self.point_transform(&bbox.minimum), 
+                    self.point_transform(&bbox.maximum)
+                ))
+            },
+            None => None,
+        }
+    }
+
+    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+        let rt = self.inverse_ray_transform(r);
+        return match self.object.intersect(rng, &rt, t_min, t_max) {
+            Some(mut rec) => {
+                self.hitrec_transform(&mut rec, r);
+                Some(rec)
+            },
+            None => None,
+        }
     }
 }

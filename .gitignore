@@ -2,3 +2,4 @@
 *.png
 /textures
 /images
+callgrind.*

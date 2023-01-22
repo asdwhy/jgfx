@@ -17,9 +17,9 @@ fn main() {
 
     // Image
     let mut aspect_ratio = 16.0/9.0;
-    let mut image_width = 400 as u32;
-    let mut samples_per_pixel = 500;
-    let max_depth = 25;
+    let mut image_width = 1200 as u32;
+    let mut samples_per_pixel = 32;
+    let max_depth = 8;
 
     // World
     let mut world = HittableList::new();
@@ -62,7 +62,7 @@ fn main() {
             world = scenes::cornell_box::build_scene();
             aspect_ratio = 1.0;
             image_width = 400;
-            samples_per_pixel = 200;
+            samples_per_pixel = 250;
             background_colour = Colour::zero();
 
             lookfrom = Point3::new(278.0, 278.0, -800.0);

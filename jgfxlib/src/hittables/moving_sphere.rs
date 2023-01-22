@@ -7,7 +7,7 @@ use crate::{
     ray::Ray,
     utils::in_range,
     hittables::{Hittable, HitRecord},
-    vec3::Vec3, affine::Affine
+    vec3::Vec3
 };
 
 pub struct MovingSphere {
@@ -16,10 +16,10 @@ pub struct MovingSphere {
     pub time: Range<f64>,
     pub radius: f64,
     pub material: Arc<dyn Material>,
-    pub transform: Affine
 }
 
 impl MovingSphere {
+    /// Create movable sphere defined by starting and ending origins
     pub fn new(
         origin0: Point3, 
         origin1: Point3, 
@@ -29,18 +29,31 @@ impl MovingSphere {
     ) -> Self {
         Self {
             origin0, origin1, time, radius,
-            material: material.clone(),
-            transform: Affine::new()
+            material: material.clone()
         }
     }
 
-    pub fn get_origin(&self, time: f64) -> Point3 {
+    fn get_origin(&self, time: f64) -> Point3 {
         &self.origin0 + ((time - self.time.start) / (self.time.end - self.time.start))*(&self.origin1 - &self.origin0)
     }
 }
 
 impl Hittable for MovingSphere {
-    fn canonical_intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
+        let box0 = AABB::new(
+            self.get_origin(time.start) - Vec3::new(self.radius, self.radius, self.radius),
+            self.get_origin(time.start) + Vec3::new(self.radius, self.radius, self.radius)
+        );
+
+        let box1 = AABB::new(
+            self.get_origin(time.end) - Vec3::new(self.radius, self.radius, self.radius),
+            self.get_origin(time.end) + Vec3::new(self.radius, self.radius, self.radius)
+        );
+
+        Some(surrounding_box(box0, box1))
+    }
+
+    fn intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = &r.origin - self.get_origin(r.time);
         let a = r.dir.length_squared();
         let half_b = oc.dot(&r.dir);
@@ -72,24 +85,6 @@ impl Hittable for MovingSphere {
         rec.set_face_normal(r);
 
         Some(rec)
-    }
-
-    fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
-        let box0 = AABB::new(
-            self.get_origin(time.start) - Vec3::new(self.radius, self.radius, self.radius),
-            self.get_origin(time.start) + Vec3::new(self.radius, self.radius, self.radius)
-        );
-
-        let box1 = AABB::new(
-            self.get_origin(time.end) - Vec3::new(self.radius, self.radius, self.radius),
-            self.get_origin(time.end) + Vec3::new(self.radius, self.radius, self.radius)
-        );
-
-        Some(surrounding_box(box0, box1))
-    }
-
-    fn get_transformation(&self) -> &Affine {
-        &self.transform
     }
 }
 

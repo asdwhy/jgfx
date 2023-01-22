@@ -7,19 +7,16 @@ use crate::{
     ray::Ray,
     utils::in_range,
     hittables::{HitRecord, Hittable}, 
-    affine::Affine
 };
 
 pub struct Sphere {
     pub material: Arc<dyn Material>,
-    pub transform: Affine
 }
 
 impl Sphere {
     pub fn new(material: Arc<dyn Material>) -> Self where Self: Sized {
         Self {
             material: material.clone(),
-            transform: Affine::new()
         }
     }
 
@@ -35,8 +32,11 @@ impl Sphere {
 }
 
 impl Hittable for Sphere {
-    /// Computes intersection of given ray with canonical sphere
-    fn canonical_intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
+        Some(AABB::new(Point3::from_value(-1.0), Point3::from_value(1.0)))
+    }
+
+    fn intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = &r.origin;
         let a = r.dir.length_squared();
         let half_b = oc.dot(&r.dir);
@@ -70,25 +70,5 @@ impl Hittable for Sphere {
         rec.set_face_normal(&r);
         
         Some(rec)
-    }
-
-    fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
-        let (c0, c1) = if self.transform.is_identity() {
-            (
-                Point3::from_value(-1.0), 
-                Point3::from_value(1.0)
-            )
-        } else {
-            (
-                self.transform.point_transform(&Point3::from_value(-1.0)), 
-                self.transform.point_transform(&Point3::from_value(1.0))
-            )
-        };
-
-        Some(AABB::new(c0, c1))
-    }
-
-    fn get_transformation(&self) -> &Affine {
-        &self.transform
     }
 }

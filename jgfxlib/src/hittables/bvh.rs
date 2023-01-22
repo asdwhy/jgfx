@@ -1,7 +1,6 @@
 use std::{ops::Range, cmp::Ordering};
 use std::sync::Arc;
 use rand::rngs::SmallRng;
-use crate::affine::Affine;
 use crate::{
     aabb::{surrounding_box, AABB},
     utils::sort_from,
@@ -13,11 +12,11 @@ use crate::{
 pub struct BvhNode {
     left: Arc<dyn Hittable>,
     right: Arc<dyn Hittable>,
-    bounding_box: AABB,
-    transform: Affine
+    bounding_box: AABB
 }
 
 impl BvhNode {
+    /// Create BVH tree from given HittableList
     pub fn new(list: HittableList, time: Range<f64>) -> Self {
         let mut list = list;
         let len = list.objects.len();
@@ -82,15 +81,18 @@ impl BvhNode {
         Self {
             left,
             right,
-            bounding_box: surrounding_box(b0.unwrap(), b1.unwrap()),
-            transform: Affine::new()
+            bounding_box: surrounding_box(b0.unwrap(), b1.unwrap())
         }     
     }
 }
 
 
 impl Hittable for BvhNode {
-    fn canonical_intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
+        Some(self.bounding_box.clone())
+    }
+
+    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         if !self.bounding_box.intersect(r, t_min, t_max) {
             return None;
         }
@@ -114,13 +116,5 @@ impl Hittable for BvhNode {
         } else {
             return None;
         }
-    }
-
-    fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
-        Some(self.bounding_box.clone())
-    }
-
-    fn get_transformation(&self) -> &Affine {
-        &self.transform
     }
 }

@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use jgfxlib::{hittables::{hittable_list::HittableList, sphere::Sphere, moving_sphere::MovingSphere, bvh::BvhNode}, colour::Colour, textures::checker_texture::CheckerTexture, materials::{lambertian::Lambertian, metal::Metal, dialetric::Dialetric}, point3::Point3, vec3::Vec3, random::{random, random_in_range}};
+use jgfxlib::{hittables::{hittable_list::HittableList, sphere::Sphere, moving_sphere::MovingSphere, bvh::BvhNode, affine::Affine}, colour::Colour, textures::checker_texture::CheckerTexture, materials::{lambertian::Lambertian, metal::Metal, dialetric::Dialetric}, point3::Point3, vec3::Vec3, random::{random, random_in_range}};
 use rand::{rngs::SmallRng, SeedableRng, Rng};
 
 pub fn build_scene() -> HittableList {
@@ -9,11 +9,12 @@ pub fn build_scene() -> HittableList {
     let checker = Arc::new(CheckerTexture::new(Colour::new(0.2, 0.3, 0.1), Colour::new(0.9, 0.9, 0.9)));
     let ground_material = Arc::new(Lambertian::from_texture(checker));
     // let sphere = Sphere::new(Point3::new(0.0, -1000.0, 0.0), 1000.0, ground_material);
-    let mut sphere = Sphere::new(ground_material);
-    sphere.transform.scale_uniform(1000.0);
-    sphere.transform.translate(0.0, -1000.0, 0.0);
-    sphere.transform.set_inverse();
-    world.add(Arc::new(sphere));
+    let sphere = Sphere::new(ground_material);
+    let mut transform = Affine::new(Arc::new(sphere));
+    transform.scale_uniform(1000.0);
+    transform.translate(0.0, -1000.0, 0.0);
+    transform.set_inverse();
+    world.add(Arc::new(transform));
 
     let mut rng = SmallRng::seed_from_u64(1232);    
 
@@ -41,24 +42,26 @@ pub fn build_scene() -> HittableList {
 
                     let sphere_material = Arc::new(Metal::new(albedo, fuzz));
 
-                    let mut sphere = Sphere::new(sphere_material);
-                    sphere.transform.scale_uniform(0.2);
-                    sphere.transform.translate(center.x, center.y, center.z);
-                    sphere.transform.set_inverse();
+                    let sphere = Sphere::new(sphere_material);
+                    let mut transform = Affine::new(Arc::new(sphere));
+                    transform.scale_uniform(0.2);
+                    transform.translate(center.x, center.y, center.z);
+                    transform.set_inverse();
 
                     // let sphere = Sphere::new(center, 0.2, sphere_material);
-                    world.add(Arc::new(sphere));
+                    world.add(Arc::new(transform));
                 } else {
                     // glass
                     let sphere_material = Arc::new(Dialetric::new(1.5));
                     // let sphere = Sphere::new(center, 0.2, sphere_material);
 
-                    let mut sphere = Sphere::new(sphere_material);
-                    sphere.transform.scale_uniform(0.2);
-                    sphere.transform.translate(center.x, center.y, center.z);
-                    sphere.transform.set_inverse();
+                    let sphere = Sphere::new(sphere_material);
+                    let mut transform = Affine::new(Arc::new(sphere));
+                    transform.scale_uniform(0.2);
+                    transform.translate(center.x, center.y, center.z);
+                    transform.set_inverse();
 
-                    world.add(Arc::new(sphere));
+                    world.add(Arc::new(transform));
                 }
             }
         }
@@ -67,24 +70,27 @@ pub fn build_scene() -> HittableList {
 
     let material = Arc::new(Dialetric::new(1.5));
     // let sphere = Sphere::new(Point3::new(0.0, 1.0, 0.0), 1.0, material);
-    let mut sphere = Sphere::new(material);
-    sphere.transform.translate(0.0, 1.0, 0.0);
-    sphere.transform.set_inverse();
-    world.add(Arc::new(sphere));
+    let sphere = Sphere::new(material);
+    let mut transform = Affine::new(Arc::new(sphere));
+    transform.translate(0.0, 1.0, 0.0);
+    transform.set_inverse();
+    world.add(Arc::new(transform));
 
     let material = Arc::new(Lambertian::new(Colour::new(0.4, 0.2, 0.1)));
     // let sphere = Sphere::new(Point3::new(-4.0, 1.0, 0.0), 1.0, material);
-    let mut sphere = Sphere::new(material);
-    sphere.transform.translate(-4.0, 1.0, 0.0);
-    sphere.transform.set_inverse();
-    world.add(Arc::new(sphere));
+    let sphere = Sphere::new(material);
+    let mut transform = Affine::new(Arc::new(sphere));
+    transform.translate(-4.0, 1.0, 0.0);
+    transform.set_inverse();
+    world.add(Arc::new(transform));
 
     let material = Arc::new(Metal::new(Colour::new(0.7, 0.6, 0.5), 0.0));
     // let sphere = Sphere::new(Point3::new(4.0, 1.0, 0.0), 1.0, material);
-    let mut sphere = Sphere::new(material);
-    sphere.transform.translate(4.0, 1.0, 0.0);
-    sphere.transform.set_inverse();
-    world.add(Arc::new(sphere));
+    let sphere = Sphere::new(material);
+    let mut transform = Affine::new(Arc::new(sphere));
+    transform.translate(4.0, 1.0, 0.0);
+    transform.set_inverse();
+    world.add(Arc::new(transform));
 
     let mut world2 = HittableList::new();
     let b = BvhNode::new(world, 0.0..1.0);
