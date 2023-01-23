@@ -6,7 +6,7 @@ use crate::{
     vec3::Vec3, 
     ray::Ray, 
     objects::{Intersection, Object}, 
-    point3::Point3, aabb::AABB
+    point3::Point3, aabb::AABB, utils::{fmin, fmax}
 };
 
 /// Affine transformations
@@ -158,13 +158,30 @@ impl Affine {
 
 impl Object for Affine {
     fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
+        
         match self.object.bounding_box(time) {
             Some(bbox) => {
+                let p1 = self.point_transform(&bbox.minimum);
+                let p2 = self.point_transform(&bbox.maximum);
+
+                let min_x = fmin(p1.x, p2.x);
+                let min_y = fmin(p1.y, p2.y);
+                let min_z = fmin(p1.z, p2.z);
+
+                let max_x = fmax(p1.x, p2.x);
+                let max_y = fmax(p1.y, p2.y);
+                let max_z = fmax(p1.z, p2.z);
+
                 // transform box according to affine transformation
                 Some(AABB::new(
-                    self.point_transform(&bbox.minimum), 
-                    self.point_transform(&bbox.maximum)
+                    Point3::new(min_x, min_y, min_z), 
+                    Point3::new(max_x, max_y, max_z)
                 ))
+
+                // Some(AABB::new(
+                //     p1, 
+                //     p2
+                // ))
             },
             None => None,
         }

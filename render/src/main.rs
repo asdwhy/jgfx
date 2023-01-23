@@ -30,7 +30,7 @@ fn main() {
     let mut background_colour: Colour = Colour::new(0.7, 0.8, 1.0);
     let mut time = 0.0..0.0;
 
-    let scene_num = 8;
+    let scene_num = 5;
 
     match scene_num {
         1 => {
@@ -62,24 +62,24 @@ fn main() {
             world = scenes::cornell_box::build_scene();
             aspect_ratio = 1.0;
             image_width = 400;
-            samples_per_pixel = 250;
+            samples_per_pixel = 5000;
             background_colour = Colour::zero();
 
             lookfrom = Point3::new(278.0, 278.0, -800.0);
             lookat = Point3::new(278.0, 278.0, 0.0);
             vfov = 40.0;
         },
-        // 6 => {
-        //     world = scenes::cornell_smoke::build_scene();
-        //     aspect_ratio = 1.0;
-        //     image_width = 400;
-        //     samples_per_pixel = 100;
-        //     background_colour = Colour::zero();
+        6 => {
+            world = scenes::cornell_smoke::build_scene();
+            aspect_ratio = 1.0;
+            image_width = 400;
+            samples_per_pixel = 1000;
+            background_colour = Colour::zero();
 
-        //     lookfrom = Point3::new(278.0, 278.0, -800.0);
-        //     lookat = Point3::new(278.0, 278.0, 0.0);
-        //     vfov = 40.0;
-        // },
+            lookfrom = Point3::new(278.0, 278.0, -800.0);
+            lookat = Point3::new(278.0, 278.0, 0.0);
+            vfov = 40.0;
+        },
         // 7 => {
         //     world = scenes::final_scene::build_scene();
         //     aspect_ratio = 1.0;

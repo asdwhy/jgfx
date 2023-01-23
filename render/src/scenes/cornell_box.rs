@@ -10,7 +10,7 @@ use jgfxlib::{
         }, 
         rect_prism::RectangularPrism, 
         Object,
-        affine::Affine
+        affine::Affine, bvh::BvhNode
     }, 
     materials::{
         lambertian::Lambertian, diffuse_light::DiffuseLight
@@ -51,10 +51,10 @@ pub fn build_scene() -> ObjectList {
 
     // objects
 
-    // let bvh = Arc::new(BvhNode::new(objects, 0.0..0.0));
-    // let mut world = ObjectList::new();
-    // world.add(bvh);
+    let bvh = Arc::new(BvhNode::new(objects, 0.0..0.0));
+    let mut world = ObjectList::new();
+    world.add(bvh);
 
-    objects
+    world
 
 }
