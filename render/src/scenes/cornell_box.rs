@@ -44,7 +44,9 @@ pub fn build_scene() -> ObjectList {
 
     let b: Arc<dyn Object> = Arc::new(RectangularPrism::new(Point3::zero(), Point3::from_value(165.0), white.clone()));
     let mut transform = Affine::new(b);
-    transform.rotate_y((-18.0 as f64).to_radians());
+    // transform.rotate_y((18.0 as f64).to_radians()); // original rotation
+    transform.rotate_y((-28.0 as f64).to_radians());
+    transform.rotate_x((-30.0 as f64).to_radians());
     transform.translate(130.0, 0.0, 65.0);
     transform.set_inverse();
     objects.add(Arc::new(transform));

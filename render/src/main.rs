@@ -62,7 +62,7 @@ fn main() {
             world = scenes::cornell_box::build_scene();
             aspect_ratio = 1.0;
             image_width = 400;
-            samples_per_pixel = 5000;
+            samples_per_pixel = 2000;
             background_colour = Colour::zero();
 
             lookfrom = Point3::new(278.0, 278.0, -800.0);

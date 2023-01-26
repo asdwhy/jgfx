@@ -158,30 +158,46 @@ impl Affine {
 
 impl Object for Affine {
     fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
-        
         match self.object.bounding_box(time) {
             Some(bbox) => {
+                // transform minimum and maximum corners
                 let p1 = self.point_transform(&bbox.minimum);
                 let p2 = self.point_transform(&bbox.maximum);
 
-                let min_x = fmin(p1.x, p2.x);
-                let min_y = fmin(p1.y, p2.y);
-                let min_z = fmin(p1.z, p2.z);
+                // get other corners of bounding box
+                let dx = bbox.maximum.x - bbox.minimum.x;
+                let dy = bbox.maximum.y - bbox.minimum.y;
+                let dz = bbox.maximum.z - bbox.minimum.z;
 
-                let max_x = fmax(p1.x, p2.x);
-                let max_y = fmax(p1.y, p2.y);
-                let max_z = fmax(p1.z, p2.z);
+                let p3 = p1 + Point3::new(0.0, 0.0, dz);
+                let p4 = p1 + Point3::new(0.0, dy, 0.0);
+                let p5 = p1 + Point3::new(0.0, dy, dz);
+                let p6 = p1 + Point3::new(dx, 0.0, 0.0);
+                let p7 = p1 + Point3::new(dx, 0.0, dz);
+                let p8 = p1 + Point3::new(dx, dy, 0.0);
+
+                // transform other corners as well
+                let p3 = self.point_transform(&p3);
+                let p4 = self.point_transform(&p4);
+                let p5 = self.point_transform(&p5);
+                let p6 = self.point_transform(&p6);
+                let p7 = self.point_transform(&p7);
+                let p8 = self.point_transform(&p8);
+
+                // take min and max values as new bounding box
+                let min_x = fmin(fmin(fmin(fmin(fmin(fmin(fmin(p1.x, p2.x), p3.x), p4.x), p5.x), p6.x), p7.x), p8.x);
+                let min_y = fmin(fmin(fmin(fmin(fmin(fmin(fmin(p1.y, p2.y), p3.y), p4.y), p5.y), p6.y), p7.y), p8.y);
+                let min_z = fmin(fmin(fmin(fmin(fmin(fmin(fmin(p1.z, p2.z), p3.z), p4.z), p5.z), p6.z), p7.z), p8.z);
+
+                let max_x = fmax(fmax(fmax(fmax(fmax(fmax(fmax(p1.x, p2.x), p3.x), p4.x), p5.x), p6.x), p7.x), p8.x);
+                let max_y = fmax(fmax(fmax(fmax(fmax(fmax(fmax(p1.y, p2.y), p3.y), p4.y), p5.y), p6.y), p7.y), p8.y);
+                let max_z = fmax(fmax(fmax(fmax(fmax(fmax(fmax(p1.z, p2.z), p3.z), p4.z), p5.z), p6.z), p7.z), p8.z);
 
                 // transform box according to affine transformation
                 Some(AABB::new(
-                    Point3::new(min_x, min_y, min_z), 
+                    Point3::new(min_x, min_y, min_z),
                     Point3::new(max_x, max_y, max_z)
                 ))
-
-                // Some(AABB::new(
-                //     p1, 
-                //     p2
-                // ))
             },
             None => None,
         }
