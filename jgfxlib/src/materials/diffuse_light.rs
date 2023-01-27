@@ -5,7 +5,7 @@ use crate::{
     colour::Colour, 
     materials::Material,
     ray::Ray, 
-    hittables::HitRecord, 
+    objects::Intersection, 
     point3::Point3
 };
 
@@ -30,7 +30,7 @@ impl DiffuseLight {
 
 impl Material for DiffuseLight {
     // This light doesn't scatter light
-    fn scatter(&self, _: &mut SmallRng, _: Ray, _: &HitRecord) -> Option<(Colour, Ray)> {
+    fn scatter(&self, _: &mut SmallRng, _: Ray, _: &Intersection) -> Option<(Colour, Ray)> {
         None
     }
 

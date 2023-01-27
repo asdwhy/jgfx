@@ -4,36 +4,36 @@ use rand::rngs::SmallRng;
 use crate::{
     aabb::{surrounding_box, AABB},
     utils::sort_from,
-    hittables::{Hittable, HitRecord, hittable_list::HittableList},
+    objects::{Object, Intersection, object_list::ObjectList},
     random::random_i32,
     ray::Ray
 };
 
 pub struct BvhNode {
-    left: Arc<dyn Hittable>,
-    right: Arc<dyn Hittable>,
+    left: Arc<dyn Object>,
+    right: Arc<dyn Object>,
     bounding_box: AABB
 }
 
 impl BvhNode {
-    /// Create BVH tree from given HittableList
-    pub fn new(list: HittableList, time: Range<f64>) -> Self {
+    /// Create BVH tree from given ObjectList
+    pub fn new(list: ObjectList, time: Range<f64>) -> Self {
         let mut list = list;
         let len = list.objects.len();
         Self::from_indexes(&mut list.objects, 0, len, time)
     }
 
-    fn from_indexes(src_objects: &mut Vec<Arc<dyn Hittable>>, start: usize, end: usize, time: Range<f64>) -> Self {
+    fn from_indexes(src_objects: &mut Vec<Arc<dyn Object>>, start: usize, end: usize, time: Range<f64>) -> Self {
         let mut objects = src_objects;
 
         let axis = random_i32(0..3);
 
-        let comparator = |a: &Arc<dyn Hittable>, b: &Arc<dyn Hittable>| -> bool {
+        let comparator = |a: &Arc<dyn Object>, b: &Arc<dyn Object>| -> bool {
             let box_a = a.bounding_box(0.0..0.0); // I know this looks wrong but its right!
             let box_b = b.bounding_box(0.0..0.0); // I think...
             
             if box_a.is_none() && box_b.is_none() {
-                eprintln!("No bounding box in BvhNode constructor, a passed hittable had no bounding box implemented");
+                eprintln!("No bounding box in BvhNode constructor, a passed object had no bounding box implemented");
             }
         
             let box_a = box_a.unwrap();
@@ -43,8 +43,8 @@ impl BvhNode {
         };
 
         let object_span = end - start;
-        let left: Arc<dyn Hittable>;
-        let right: Arc<dyn Hittable>;
+        let left: Arc<dyn Object>;
+        let right: Arc<dyn Object>;
 
         if object_span == 1 { // base case only one object, copy it to both subtrees
             left = objects[start].clone();
@@ -75,7 +75,7 @@ impl BvhNode {
         let b1 = right.bounding_box(time);
 
         if b0.is_none() || b1.is_none() {
-            eprintln!("No bounding box in BvhNode constructor, a passed hittable had no bounding box implemented");
+            eprintln!("No bounding box in BvhNode constructor, a passed object had no bounding box implemented");
         }
 
         Self {
@@ -87,12 +87,12 @@ impl BvhNode {
 }
 
 
-impl Hittable for BvhNode {
+impl Object for BvhNode {
     fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
         Some(self.bounding_box.clone())
     }
 
-    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {
         if !self.bounding_box.intersect(r, t_min, t_max) {
             return None;
         }

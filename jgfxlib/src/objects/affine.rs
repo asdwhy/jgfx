@@ -5,21 +5,21 @@ use rand::rngs::SmallRng;
 use crate::{
     vec3::Vec3, 
     ray::Ray, 
-    hittables::{HitRecord, Hittable}, 
-    point3::Point3, aabb::AABB
+    objects::{Intersection, Object}, 
+    point3::Point3, aabb::AABB, utils::{fmin, fmax}
 };
 
 /// Affine transformations
 pub struct Affine {
-    object: Arc<dyn Hittable>,
+    object: Arc<dyn Object>,
     transformed: bool,          // flag to denote non identity transform
     mat_t: Matrix4<f64>,        // note these matrices are stored as column vectors!
     mat_t_inv: Matrix4<f64>
 }
 
 impl Affine {
-    /// Create affinely transformable object given by passed Hittable
-    pub fn new(object: Arc<dyn Hittable>) -> Self {
+    /// Create affinely transformable object given by passed Object
+    pub fn new(object: Arc<dyn Object>) -> Self {
         Self {
             object: object.clone(),
             transformed: false,
@@ -52,7 +52,7 @@ impl Affine {
         Ray::new(origin, dir, r.time.clone())
     }
 
-    fn hitrec_transform(&self, rec: &mut HitRecord, r: &Ray) {
+    fn hitrec_transform(&self, rec: &mut Intersection, r: &Ray) {
         rec.p = r.at(rec.t);
         rec.n = Self::normal_transform(&self, &rec.n);
     }
@@ -156,21 +156,54 @@ impl Affine {
     }
 }
 
-impl Hittable for Affine {
+impl Object for Affine {
     fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
         match self.object.bounding_box(time) {
             Some(bbox) => {
+                // transform minimum and maximum corners
+                let p1 = self.point_transform(&bbox.minimum);
+                let p2 = self.point_transform(&bbox.maximum);
+
+                // get other corners of bounding box
+                let dx = bbox.maximum.x - bbox.minimum.x;
+                let dy = bbox.maximum.y - bbox.minimum.y;
+                let dz = bbox.maximum.z - bbox.minimum.z;
+
+                let p3 = p1 + Point3::new(0.0, 0.0, dz);
+                let p4 = p1 + Point3::new(0.0, dy, 0.0);
+                let p5 = p1 + Point3::new(0.0, dy, dz);
+                let p6 = p1 + Point3::new(dx, 0.0, 0.0);
+                let p7 = p1 + Point3::new(dx, 0.0, dz);
+                let p8 = p1 + Point3::new(dx, dy, 0.0);
+
+                // transform other corners as well
+                let p3 = self.point_transform(&p3);
+                let p4 = self.point_transform(&p4);
+                let p5 = self.point_transform(&p5);
+                let p6 = self.point_transform(&p6);
+                let p7 = self.point_transform(&p7);
+                let p8 = self.point_transform(&p8);
+
+                // take min and max values as new bounding box
+                let min_x = fmin(fmin(fmin(fmin(fmin(fmin(fmin(p1.x, p2.x), p3.x), p4.x), p5.x), p6.x), p7.x), p8.x);
+                let min_y = fmin(fmin(fmin(fmin(fmin(fmin(fmin(p1.y, p2.y), p3.y), p4.y), p5.y), p6.y), p7.y), p8.y);
+                let min_z = fmin(fmin(fmin(fmin(fmin(fmin(fmin(p1.z, p2.z), p3.z), p4.z), p5.z), p6.z), p7.z), p8.z);
+
+                let max_x = fmax(fmax(fmax(fmax(fmax(fmax(fmax(p1.x, p2.x), p3.x), p4.x), p5.x), p6.x), p7.x), p8.x);
+                let max_y = fmax(fmax(fmax(fmax(fmax(fmax(fmax(p1.y, p2.y), p3.y), p4.y), p5.y), p6.y), p7.y), p8.y);
+                let max_z = fmax(fmax(fmax(fmax(fmax(fmax(fmax(p1.z, p2.z), p3.z), p4.z), p5.z), p6.z), p7.z), p8.z);
+
                 // transform box according to affine transformation
                 Some(AABB::new(
-                    self.point_transform(&bbox.minimum), 
-                    self.point_transform(&bbox.maximum)
+                    Point3::new(min_x, min_y, min_z),
+                    Point3::new(max_x, max_y, max_z)
                 ))
             },
             None => None,
         }
     }
 
-    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
+    fn intersect(&self, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {
         let rt = self.inverse_ray_transform(r);
         return match self.object.intersect(rng, &rt, t_min, t_max) {
             Some(mut rec) => {

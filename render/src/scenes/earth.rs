@@ -1,8 +1,8 @@
 use std::{sync::Arc};
 
 use jgfxlib::{
-    hittables::{
-        hittable_list::HittableList, sphere::Sphere, affine::Affine,
+    objects::{
+        object_list::ObjectList, sphere::Sphere, affine::Affine,
     }, 
     textures::{image_texture::ImageTexture}, 
     materials::{
@@ -10,13 +10,13 @@ use jgfxlib::{
     }
 };
 
-pub fn build_scene() -> HittableList {
-    let mut world = HittableList::new();
+pub fn build_scene() -> ObjectList {
+    let mut world = ObjectList::new();
 
     let earth_texture = Arc::new(ImageTexture::new("textures/earthmap.jpg"));
     let earth_surface = Arc::new(Lambertian::from_texture(earth_texture));
 
-    let sphere = Sphere::new(earth_surface);
+    let sphere = Sphere::canonical(earth_surface);
     let mut transform = Affine::new(Arc::new(sphere));
     transform.rotate_z(0.4);
     transform.scale_uniform(2.0);

@@ -2,7 +2,7 @@
 // use rand::{rngs::SmallRng, SeedableRng, Rng};
 // use jgfxlib::{
 //     hittables::{
-//         hittable_list::HittableList, aa_rectangles::{
+//         hittable_list::ObjectList, aa_rectangles::{
 //             xz_rect::XzRectangle,
 //         }, 
 //         rect_prism::RectangularPrism,  
@@ -25,8 +25,8 @@
 
 // const BOXES_PER_SIDE: i32 = 20;
 
-// pub fn build_scene() -> HittableList {
-//     let mut boxes1 = HittableList::new();
+// pub fn build_scene() -> ObjectList {
+//     let mut boxes1 = ObjectList::new();
 //     let ground_mat = Arc::new(Lambertian::new(Colour::new(0.48, 0.83, 0.53)));
 
 //     let mut rng = SmallRng::seed_from_u64(000000);
@@ -45,7 +45,7 @@
 //         }
 //     }
 
-//     let mut objects = HittableList::new();
+//     let mut objects = ObjectList::new();
 //     objects.add(Arc::new(BvhNode::new(boxes1, 0.0..1.0)));
 
 //     let light = Arc::new(DiffuseLight::new(Colour::from_value(7.0)));
@@ -72,7 +72,7 @@
 //     objects.add(Arc::new(Sphere::new(Point3::new(220.0, 280.0, 300.0), 80.0, Arc::new(Lambertian::from_texture(pertext)))));
 
 
-//     let mut boxes2 = HittableList::new();
+//     let mut boxes2 = ObjectList::new();
 //     let white = Arc::new(Lambertian::new(Colour::from_value(0.73)));
 //     let ns = 1000;
 //     for _ in 0..ns {

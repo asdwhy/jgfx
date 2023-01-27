@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{sync::Arc, f64::consts::PI};
 
 use jgfxlib::{
     objects::{
@@ -10,10 +10,10 @@ use jgfxlib::{
         }, 
         rect_prism::RectangularPrism, 
         Object,
-        affine::Affine, bvh::BvhNode
+        affine::Affine, bvh::BvhNode, wavefront_obj::new_mesh
     }, 
     materials::{
-        lambertian::Lambertian, diffuse_light::DiffuseLight
+        lambertian::Lambertian, diffuse_light::DiffuseLight, metal::Metal
     }, 
     colour::Colour, point3::Point3
 };
@@ -42,16 +42,23 @@ pub fn build_scene() -> ObjectList {
     transform.set_inverse();
     objects.add(Arc::new(transform));
 
-    let b: Arc<dyn Object> = Arc::new(RectangularPrism::new(Point3::zero(), Point3::from_value(165.0), white.clone()));
-    let mut transform = Affine::new(b);
-    // transform.rotate_y((18.0 as f64).to_radians()); // original rotation
-    transform.rotate_y((-28.0 as f64).to_radians());
-    transform.rotate_x((-30.0 as f64).to_radians());
-    transform.translate(130.0, 0.0, 65.0);
+    // objects
+    let monke_material = Arc::new(Metal::new(Colour::new(0.8, 0.4, 0.2), 0.5));
+    let obj = new_mesh("meshes/monke.obj".to_string(), monke_material);
+    let b = BvhNode::new(obj, 0.0..0.0);   
+    // objects.add(Arc::new(b));
+
+    let mut transform = Affine::new(Arc::new(b));
+    transform.scale_uniform(100.0);
+    transform.rotate_y(3.4*PI/4.0);
+    transform.rotate_x(PI/5.0 * 0.99);
+    transform.rotate_z(PI * 0.1);
+    transform.rotate_y(-PI * 0.05);
+
+    transform.translate(160.0, 42.0, 200.0);
+
     transform.set_inverse();
     objects.add(Arc::new(transform));
-
-    // objects
 
     let bvh = Arc::new(BvhNode::new(objects, 0.0..0.0));
     let mut world = ObjectList::new();

@@ -4,7 +4,7 @@ use rayon::prelude::*;
 use crate::{
     scene::Scene,
     ray::Ray,
-    hittables::Hittable,
+    objects::Object,
     constants::{INFINITY, EPSILON},
     utils::max,
     colour::Colour
