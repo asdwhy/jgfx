@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use jgfxlib::{
     objects::{
-        hittable_list::ObjectList, 
+        object_list::ObjectList, 
         aa_rectangles::{
             yz_rect::YzRectangle, 
             xz_rect::XzRectangle, 

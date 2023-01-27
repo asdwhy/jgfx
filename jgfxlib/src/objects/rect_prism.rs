@@ -6,7 +6,7 @@ use crate::{
     point3::Point3,
     materials::Material,
     objects::{
-        hittable_list::ObjectList, 
+        object_list::ObjectList, 
         aa_rectangles::{xy_rect::XyRectangle, xz_rect::XzRectangle, yz_rect::YzRectangle}, 
         Object
     }

@@ -1,6 +1,6 @@
 use crate::{
     colour::Colour,
-    objects::{hittable_list::ObjectList},
+    objects::{object_list::ObjectList},
     camera::Camera
 };
 

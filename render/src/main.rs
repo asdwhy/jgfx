@@ -1,7 +1,7 @@
 mod scenes;
 
 use jgfxlib::colour::Colour;
-use jgfxlib::objects::hittable_list::{ObjectList};
+use jgfxlib::objects::object_list::{ObjectList};
 use jgfxlib::{camera::Camera};
 use jgfxlib::vec3::Vec3;
 use jgfxlib::scene::{Scene};
@@ -17,8 +17,8 @@ fn main() {
 
     // Image
     let mut aspect_ratio = 16.0/9.0;
-    let mut image_width = 1200 as u32;
-    let mut samples_per_pixel = 200;
+    let mut image_width = 512 as u32;
+    let mut samples_per_pixel = 300;
     let max_depth = 8;
 
     // World
@@ -30,7 +30,7 @@ fn main() {
     let mut background_colour: Colour = Colour::new(0.7, 0.8, 1.0);
     let mut time = 0.0..0.0;
 
-    let scene_num = 5;
+    let scene_num = 10;
 
     match scene_num {
         1 => {
@@ -39,12 +39,12 @@ fn main() {
             lookat = Point3::zero();
             vfov = 20.0;
         },
-        // 2 => {
-        //     world = scenes::two_perlin_spheres::build_scene();
-        //     lookfrom = Point3::new(13.0, 2.0, 3.0);
-        //     lookat = Point3::zero();
-        //     vfov = 20.0;
-        // },
+        2 => {
+            world = scenes::two_perlin_spheres::build_scene();
+            lookfrom = Point3::new(13.0, 2.0, 3.0);
+            lookat = Point3::zero();
+            vfov = 20.0;
+        },
         3 => {
             world = scenes::earth::build_scene();
             lookfrom = Point3::new(0.0, 0.0, -15.0);
@@ -73,7 +73,7 @@ fn main() {
             world = scenes::cornell_smoke::build_scene();
             aspect_ratio = 1.0;
             image_width = 400;
-            samples_per_pixel = 1000;
+            samples_per_pixel = 400;
             background_colour = Colour::zero();
 
             lookfrom = Point3::new(278.0, 278.0, -800.0);
@@ -97,6 +97,26 @@ fn main() {
             lookat = Point3::zero();
             vfov = 20.0;
             aperture = 0.1;
+            time = 0.0..0.0;
+        },
+        9 => {
+            world = scenes::triangle_scene::build_scene();
+            lookfrom = Point3::new(0.0, 0.0, -10.0);
+            lookat = Point3::zero();
+            vfov = 30.0;
+            aperture = 0.0;
+            time = 0.0..0.0;
+        },
+        10 => {
+            world = scenes::wavefront_scene::build_scene();
+            aspect_ratio = 1.0;
+            image_width = 1024;
+            samples_per_pixel = 10000;
+            background_colour = Colour::zero();
+            lookat = Point3::new(278.0, 278.0, 0.0);
+            lookfrom = Point3::new(278.0, 278.0, -800.0);
+            vfov = 40.0;
+            aperture = 0.0;
             time = 0.0..0.0;
         },
         _ => {

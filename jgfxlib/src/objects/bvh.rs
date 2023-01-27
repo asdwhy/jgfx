@@ -4,7 +4,7 @@ use rand::rngs::SmallRng;
 use crate::{
     aabb::{surrounding_box, AABB},
     utils::sort_from,
-    objects::{Object, Intersection, hittable_list::ObjectList},
+    objects::{Object, Intersection, object_list::ObjectList},
     random::random_i32,
     ray::Ray
 };
@@ -33,7 +33,7 @@ impl BvhNode {
             let box_b = b.bounding_box(0.0..0.0); // I think...
             
             if box_a.is_none() && box_b.is_none() {
-                eprintln!("No bounding box in BvhNode constructor, a passed hittable had no bounding box implemented");
+                eprintln!("No bounding box in BvhNode constructor, a passed object had no bounding box implemented");
             }
         
             let box_a = box_a.unwrap();
@@ -75,7 +75,7 @@ impl BvhNode {
         let b1 = right.bounding_box(time);
 
         if b0.is_none() || b1.is_none() {
-            eprintln!("No bounding box in BvhNode constructor, a passed hittable had no bounding box implemented");
+            eprintln!("No bounding box in BvhNode constructor, a passed object had no bounding box implemented");
         }
 
         Self {

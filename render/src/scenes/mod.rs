@@ -6,3 +6,5 @@ pub mod simple_light;
 pub mod cornell_box;
 pub mod cornell_smoke;
 pub mod final_scene;
+pub mod wavefront_scene;
+pub mod triangle_scene;

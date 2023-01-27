@@ -11,12 +11,25 @@ use crate::{
 
 pub struct Sphere {
     pub material: Arc<dyn Material>,
+    origin: Point3,
+    radius: f64
 }
 
 impl Sphere {
-    pub fn new(material: Arc<dyn Material>) -> Self where Self: Sized {
+    /// Create sphere object centered at origin with given radius
+    pub fn new(origin: Point3, radius: f64, material: Arc<dyn Material>) -> Self {
         Self {
             material: material.clone(),
+            origin,  radius
+        }
+    }
+
+    // Create canonical sphere centered at the origin with radius 1
+    pub fn canonical(material: Arc<dyn Material>) -> Self {
+        Self {
+            material: material.clone(),
+            origin: Point3::zero(),
+            radius: 1.0
         }
     }
 
@@ -33,14 +46,14 @@ impl Sphere {
 
 impl Object for Sphere {
     fn bounding_box(&self, _: Range<f64>) -> Option<AABB> {
-        Some(AABB::new(Point3::from_value(-1.0), Point3::from_value(1.0)))
+        Some(AABB::new(&self.origin - Point3::from_value(self.radius), &self.origin + Point3::from_value(self.radius)))
     }
 
     fn intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {
-        let oc = &r.origin;
+        let oc = &r.origin - &self.origin;
         let a = r.dir.length_squared();
         let half_b = oc.dot(&r.dir);
-        let c = oc.length_squared() - 1.0;
+        let c = oc.length_squared() - self.radius * self.radius;
 
         let disc = half_b*half_b - a * c;
 
@@ -63,7 +76,8 @@ impl Object for Sphere {
         let t = root;
         let p = r.at(root);
         let uv = Self::get_sphere_uv(&p);
-        let n = 2.0 * p;
+        // let n = 2.0 * p;
+        let n = (&p - &self.origin) / self.radius;
         
         let mut rec = Intersection::new(t, p, n, &self.material, uv.0, uv.1);
 

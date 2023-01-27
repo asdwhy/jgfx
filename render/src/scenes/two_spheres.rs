@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use jgfxlib::{
     objects::{
-        hittable_list::ObjectList,
+        object_list::ObjectList,
         sphere::Sphere, 
         affine::Affine
     }, 
@@ -10,7 +10,7 @@ use jgfxlib::{
     textures::checker_texture::CheckerTexture, 
     materials::{
         lambertian::Lambertian
-    }, point3::Point3
+    }
 };
 
 pub fn build_scene() -> ObjectList {
@@ -19,14 +19,14 @@ pub fn build_scene() -> ObjectList {
     let checker = Arc::new(CheckerTexture::new(Colour::new(0.2, 0.3, 0.1), Colour::new(0.9, 0.9, 0.9)));
     let mat = Arc::new(Lambertian::from_texture(checker));
 
-    let sphere = Sphere::new(mat.clone());
+    let sphere = Sphere::canonical(mat.clone());
     let mut transform = Affine::new(Arc::new(sphere));
     transform.scale_uniform(10.0);
     transform.translate(0.0, -10.0, 0.0);
     transform.set_inverse();
     world.add(Arc::new(transform));
 
-    let sphere = Sphere::new(mat.clone());
+    let sphere = Sphere::canonical(mat.clone());
     let mut transform = Affine::new(Arc::new(sphere));
     transform.scale_uniform(10.0);
     transform.translate(0.0, 10.0, 0.0);

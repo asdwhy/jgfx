@@ -12,19 +12,19 @@ pub struct ObjectList {
 }
 
 impl ObjectList {
-    /// Create hittable object that is composed of multiple hittable objects. Implemented as a list.
+    /// Create object that is composed of multiple objects. Implemented as a list.
     pub fn new() -> Self where Self: Sized {
         Self {
             objects: vec![]
         }
     }
 
-    /// Add object to this hittable list
-    pub fn add(&mut self, hittable: Arc<dyn Object>) {
-        self.objects.push(hittable.clone());
+    /// Add object to this object list
+    pub fn add(&mut self, object: Arc<dyn Object>) {
+        self.objects.push(object.clone());
     }
 
-    /// Clear this hittable list
+    /// Clear this object list
     pub fn clear(&mut self) {
         self.objects.clear();
     }
