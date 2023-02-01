@@ -19,7 +19,7 @@ fn main() {
     let mut aspect_ratio = 16.0/9.0;
     let mut image_width = 512 as u32;
     let mut samples_per_pixel = 300;
-    let max_depth = 8;
+    let max_depth = 15;
 
     // World
     let mut world = ObjectList::new();
@@ -30,7 +30,7 @@ fn main() {
     let mut background_colour: Colour = Colour::new(0.7, 0.8, 1.0);
     let mut time = 0.0..0.0;
 
-    let scene_num = 10;
+    let scene_num = 11;
 
     match scene_num {
         1 => {
@@ -116,6 +116,17 @@ fn main() {
             lookat = Point3::new(278.0, 278.0, 0.0);
             lookfrom = Point3::new(278.0, 278.0, -800.0);
             vfov = 40.0;
+            aperture = 0.0;
+            time = 0.0..0.0;
+        },
+        11 => {
+            world = scenes::scene1::build_scene();
+            image_width = 2048;
+            samples_per_pixel = 20000;
+            background_colour = Colour::zero();
+            lookfrom = Point3::new(50.0,5.0,-20.0);
+            lookat = Point3::new(0.0, 0.0, 50.0);
+            vfov = 90.0;
             aperture = 0.0;
             time = 0.0..0.0;
         },

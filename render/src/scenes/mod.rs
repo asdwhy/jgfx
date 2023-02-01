@@ -8,3 +8,4 @@ pub mod cornell_smoke;
 pub mod final_scene;
 pub mod wavefront_scene;
 pub mod triangle_scene;
+pub mod scene1;

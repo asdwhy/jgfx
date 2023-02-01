@@ -64,5 +64,7 @@ fn create_mesh(model: Obj, material: Arc<dyn Material>) -> Option<ObjectList> {
         list.add(Arc::new(t));
     }
 
+    println!("Created mesh with {} triangles", list.objects.len());
+
     Some(list)
 }

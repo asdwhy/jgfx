@@ -141,7 +141,7 @@ impl Affine {
         Self::scale(self, scale, scale, scale);
     }
 
-    /// Tralsates this transformation by given values for each dimension
+    /// Translates this transformation by given values for each dimension
     pub fn translate(&mut self, x_translate: f64, y_translate: f64, z_translate: f64) {
         self.transformed = true;
 
