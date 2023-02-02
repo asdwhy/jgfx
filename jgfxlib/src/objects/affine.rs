@@ -169,12 +169,12 @@ impl Object for Affine {
                 let dy = bbox.maximum.y - bbox.minimum.y;
                 let dz = bbox.maximum.z - bbox.minimum.z;
 
-                let p3 = p1 + Point3::new(0.0, 0.0, dz);
-                let p4 = p1 + Point3::new(0.0, dy, 0.0);
-                let p5 = p1 + Point3::new(0.0, dy, dz);
-                let p6 = p1 + Point3::new(dx, 0.0, 0.0);
-                let p7 = p1 + Point3::new(dx, 0.0, dz);
-                let p8 = p1 + Point3::new(dx, dy, 0.0);
+                let p3 = &bbox.minimum + Point3::new(0.0, 0.0, dz);
+                let p4 = &bbox.minimum + Point3::new(0.0, dy, 0.0);
+                let p5 = &bbox.minimum + Point3::new(0.0, dy, dz);
+                let p6 = &bbox.minimum + Point3::new(dx, 0.0, 0.0);
+                let p7 = &bbox.minimum + Point3::new(dx, 0.0, dz);
+                let p8 = &bbox.minimum + Point3::new(dx, dy, 0.0);
 
                 // transform other corners as well
                 let p3 = self.point_transform(&p3);
