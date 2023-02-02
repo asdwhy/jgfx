@@ -5,10 +5,19 @@ use crate::{
     point3::Point3, 
     vec3::Vec3, 
     materials::Material, 
-    aabb::AABB
+    aabb::AABB,
+    objects::{
+        sphere::{Sphere}, 
+        triangle::Triangle, 
+        constant_medium::ConstantMedium,
+        rect_prism::RectangularPrism, 
+        object_list::ObjectList, 
+        moving_sphere::MovingSphere, 
+        bvh::BvhNode, 
+        affine::Affine, 
+        aa_rectangles::{xy_rect::XyRectangle, xz_rect::XzRectangle, yz_rect::YzRectangle}
+    }
 };
-
-use self::{sphere::{Sphere}, triangle::Triangle, constant_medium::ConstantMedium, rect_prism::RectangularPrism, object_list::ObjectList, moving_sphere::MovingSphere, bvh::BvhNode, affine::Affine, aa_rectangles::{xy_rect::XyRectangle, xz_rect::XzRectangle, yz_rect::YzRectangle}};
 
 pub struct Intersection {
     pub p: Point3,                      // point of intersection

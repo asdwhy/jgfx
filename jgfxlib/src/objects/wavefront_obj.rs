@@ -2,12 +2,10 @@ use core::panic;
 use std::{sync::Arc};
 use wavefront::Obj;
 use crate::{
-    objects::{triangle, object_list, AuxObjectData},
+    objects::{triangle, object_list, Object, AuxObjectData},
     materials::{Material},
     vec3::Vec3, point3::Point3
 };
-
-use super::Object;
 
 /// Create a triangle mesh from .obj file at given filename
 pub fn new_mesh(filename: String, material: Arc<dyn Material>) -> Object {

@@ -7,10 +7,8 @@ use crate::{
     aabb::AABB, 
     point3::Point3, 
     ray::Ray, vec3::Vec3,
-    objects::{Object, Intersection}, utils::{fmin, fmax}
+    objects::{Object, AuxObjectData, Intersection}, utils::{fmin, fmax}
 };
-
-use super::AuxObjectData;
 
 pub struct Triangle {
     material: Arc<dyn Material>,

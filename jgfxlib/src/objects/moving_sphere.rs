@@ -6,11 +6,9 @@ use crate::{
     materials::Material,
     ray::Ray,
     utils::in_range,
-    objects::{Object, Intersection},
+    objects::{Object, AuxObjectData, Intersection},
     vec3::Vec3
 };
-
-use super::AuxObjectData;
 
 pub struct MovingSphere {
     pub origin0: Point3,

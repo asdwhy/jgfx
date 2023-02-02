@@ -3,12 +3,10 @@ use rand::rngs::SmallRng;
 use crate::{
     aabb::{surrounding_box, AABB},
     utils::sort_from,
-    objects::{Object, Intersection},
+    objects::{Object, AuxObjectData, Intersection},
     random::random_i32,
     ray::Ray
 };
-
-use super::AuxObjectData;
 
 pub struct BvhNode {
     left: Arc<Object>,

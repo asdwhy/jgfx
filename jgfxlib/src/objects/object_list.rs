@@ -3,10 +3,8 @@ use rand::rngs::SmallRng;
 use crate::{
     aabb::{AABB, surrounding_box},
     ray::Ray,
-    objects::{Intersection, Object}
+    objects::{Intersection, Object, AuxObjectData}
 };
-
-use super::AuxObjectData;
 
 pub struct ObjectList {
     pub objects: Vec<Object>

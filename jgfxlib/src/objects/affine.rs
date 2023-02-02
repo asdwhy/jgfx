@@ -4,11 +4,9 @@ use rand::rngs::SmallRng;
 use crate::{
     vec3::Vec3, 
     ray::Ray, 
-    objects::{Intersection, Object}, 
+    objects::{Intersection, Object, AuxObjectData}, 
     point3::Point3, aabb::AABB, utils::{fmin, fmax}
 };
-
-use super::AuxObjectData;
 
 /// Affine transformations
 pub struct Affine {

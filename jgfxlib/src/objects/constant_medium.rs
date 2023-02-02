@@ -1,7 +1,7 @@
 use std::{sync::Arc, ops::Range, f64::{NEG_INFINITY, INFINITY}};
 use rand::{rngs::SmallRng, Rng};
 use crate::{
-    objects::{Object, Intersection},
+    objects::{Object, AuxObjectData, Intersection},
     materials::{Material, isotropic::Isotropic}, 
     textures::{Texture, solid_colour::SolidColour}, 
     colour::Colour, 
@@ -9,8 +9,6 @@ use crate::{
     ray::Ray,
     vec3::Vec3
 };
-
-use super::AuxObjectData;
 
 pub struct ConstantMedium {
     boundary: Arc<Object>,

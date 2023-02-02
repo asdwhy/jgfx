@@ -6,10 +6,8 @@ use crate::{
     point3::Point3,
     ray::Ray,
     utils::in_range,
-    objects::{Intersection, Object}, 
+    objects::{Intersection, Object, AuxObjectData }, 
 };
-
-use super::AuxObjectData;
 
 pub struct Sphere {
     pub material: Arc<dyn Material>,
