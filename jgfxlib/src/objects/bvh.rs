@@ -18,6 +18,10 @@ pub struct BvhNode {
 impl BvhNode {
     /// Create BVH tree from given ObjectList
     pub fn new(list: ObjectList, time: Range<f64>) -> Self {
+        if list.objects.is_empty() {
+            panic!("Tried to create BVH tree from empty list");
+        }
+
         let mut list = list;
         let len = list.objects.len();
         Self::from_indexes(&mut list.objects, 0, len, time)
