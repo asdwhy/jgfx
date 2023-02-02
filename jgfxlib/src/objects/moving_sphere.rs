@@ -10,6 +10,8 @@ use crate::{
     vec3::Vec3
 };
 
+use super::AuxObjectData;
+
 pub struct MovingSphere {
     pub origin0: Point3,
     pub origin1: Point3,
@@ -18,75 +20,81 @@ pub struct MovingSphere {
     pub material: Arc<dyn Material>,
 }
 
-impl MovingSphere {
-    /// Create movable sphere defined by starting and ending origins
-    pub fn new(
-        origin0: Point3, 
-        origin1: Point3, 
-        time: Range<f64>,
-        radius: f64,
-        material: Arc<dyn Material>
-    ) -> Self {
-        Self {
-            origin0, origin1, time, radius,
-            material: material.clone()
-        }
-    }
+/// Create movable sphere defined by starting and ending origins
+pub fn new(
+    origin0: Point3, 
+    origin1: Point3, 
+    time: Range<f64>,
+    radius: f64,
+    material: Arc<dyn Material>
+) -> Object {
+    let data = MovingSphere {
+        origin0, origin1, time, radius,
+        material: material.clone()
+    };
 
-    fn get_origin(&self, time: f64) -> Point3 {
-        &self.origin0 + ((time - self.time.start) / (self.time.end - self.time.start))*(&self.origin1 - &self.origin0)
+    Object {
+        intersect, bounding_box,
+        aux: AuxObjectData::MovingSphere(data)
     }
 }
 
-impl Object for MovingSphere {
-    fn bounding_box(&self, time: Range<f64>) -> Option<AABB> {
-        let box0 = AABB::new(
-            self.get_origin(time.start) - Vec3::new(self.radius, self.radius, self.radius),
-            self.get_origin(time.start) + Vec3::new(self.radius, self.radius, self.radius)
-        );
+fn get_origin(aux: &MovingSphere, time: f64) -> Point3 {
+    &aux.origin0 + ((time - aux.time.start) / (aux.time.end - aux.time.start))*(&aux.origin1 - &aux.origin0)
+}
 
-        let box1 = AABB::new(
-            self.get_origin(time.end) - Vec3::new(self.radius, self.radius, self.radius),
-            self.get_origin(time.end) + Vec3::new(self.radius, self.radius, self.radius)
-        );
+fn bounding_box(obj: &Object, time: Range<f64>) -> Option<AABB> {
+    let aux = if let AuxObjectData::MovingSphere(aux) = &obj.aux { aux } else { panic!("Could not extract MovingSphere from aux data") };
 
-        Some(surrounding_box(box0, box1))
-    }
+    let box0 = AABB::new(
+        get_origin(&aux, time.start) - Vec3::new(aux.radius, aux.radius, aux.radius),
+        get_origin(&aux, time.start) + Vec3::new(aux.radius, aux.radius, aux.radius)
+    );
 
-    fn intersect(&self, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {
-        let oc = &r.origin - self.get_origin(r.time);
-        let a = r.dir.length_squared();
-        let half_b = oc.dot(&r.dir);
-        let c = oc.length_squared() - self.radius * self.radius;
+    let box1 = AABB::new(
+        get_origin(&aux, time.end) - Vec3::new(aux.radius, aux.radius, aux.radius),
+        get_origin(&aux, time.end) + Vec3::new(aux.radius, aux.radius, aux.radius)
+    );
 
-        let disc = half_b*half_b - a * c;
+    Some(surrounding_box(box0, box1))
+}
 
-        if disc < 0.0 { return None }
+fn intersect(obj: &Object, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {
+    let aux = if let AuxObjectData::MovingSphere(aux) = &obj.aux { aux } else { panic!("Could not extract MovingSphere from aux data") };
 
-        let sqrtdisc = disc.sqrt();
-        
-        // find nearest root in acceptable range
-        let mut root = (-half_b - sqrtdisc) / a;
+    let oc = &r.origin - get_origin(&aux, r.time);
+    let a = r.dir.length_squared();
+    let half_b = oc.dot(&r.dir);
+    let c = oc.length_squared() - aux.radius * aux.radius;
+
+    let disc = half_b*half_b - a * c;
+
+    if disc < 0.0 { return None }
+
+    let sqrtdisc = disc.sqrt();
+    
+    // find nearest root in acceptable range
+    let mut root = (-half_b - sqrtdisc) / a;
+
+    if !in_range(root, t_min, t_max) {
+        root = (-half_b + sqrtdisc) / a;
 
         if !in_range(root, t_min, t_max) {
-            root = (-half_b + sqrtdisc) / a;
-
-            if !in_range(root, t_min, t_max) {
-                return None
-            }
+            return None
         }
-
-        let t = root;
-        let p = r.at(root);
-        let n = (&p - self.get_origin(r.time)) / self.radius;
-        let uv = get_sphere_uv(&n);
-
-        let mut rec = Intersection::new(t, p, n, &self.material, uv.0, uv.1);
-        rec.set_face_normal(r);
-
-        Some(rec)
     }
+
+    let t = root;
+    let p = r.at(root);
+    let n = (&p - get_origin(&aux, r.time)) / aux.radius;
+    let uv = get_sphere_uv(&n);
+
+    let mut rec = Intersection::new(t, p, n, &aux.material, uv.0, uv.1);
+    rec.set_face_normal(r);
+
+    Some(rec)
 }
+
 
 /// p: given a point on the unit sphere
 /// returns (u,v): texture coordinates

@@ -4,7 +4,6 @@ use rayon::prelude::*;
 use crate::{
     scene::Scene,
     ray::Ray,
-    objects::Object,
     constants::{INFINITY, EPSILON},
     utils::max,
     colour::Colour
@@ -86,7 +85,7 @@ impl Renderer {
         }
 
         // intersect ray with scene
-        let rec = match scene.objects.intersect(rng, &r, EPSILON, INFINITY) {
+        let rec = match (scene.objects.intersect)(&scene.objects, rng, &r, EPSILON, INFINITY) {
             Some(rec) => rec,
             None => return scene.background_colour
         };

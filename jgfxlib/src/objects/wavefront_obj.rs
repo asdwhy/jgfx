@@ -2,13 +2,15 @@ use core::panic;
 use std::{sync::Arc};
 use wavefront::Obj;
 use crate::{
-    objects::{triangle::Triangle, object_list::ObjectList},
-    materials::{Material}, 
+    objects::{triangle, object_list, AuxObjectData},
+    materials::{Material},
     vec3::Vec3, point3::Point3
 };
 
+use super::Object;
+
 /// Create a triangle mesh from .obj file at given filename
-pub fn new_mesh(filename: String, material: Arc<dyn Material>) -> ObjectList {
+pub fn new_mesh(filename: String, material: Arc<dyn Material>) -> Object {
     let model = match Obj::from_file(filename.clone()) {
         Err(err) => {
             eprintln!("Error parsing {filename}: {err}");
@@ -26,8 +28,8 @@ pub fn new_mesh(filename: String, material: Arc<dyn Material>) -> ObjectList {
     }
 }
 
-fn create_mesh(model: Obj, material: Arc<dyn Material>) -> Option<ObjectList> {
-    let mut list = ObjectList::new();
+fn create_mesh(model: Obj, material: Arc<dyn Material>) -> Option<Object> {
+    let mut list = object_list::new();
     
     for triangle in model.triangles() {
         // normal of triangle
@@ -59,12 +61,12 @@ fn create_mesh(model: Obj, material: Arc<dyn Material>) -> Option<ObjectList> {
         uv[1] = uv[1] / 3.0;
 
         // TODO: interpolate uv value instead of simple average
-
-        let t = Triangle::new(p0, p1, p2, Some(n), Some((uv[0] as f64, uv[1] as f64)), material.clone());
-        list.add(Arc::new(t));
+        let t = triangle::new(p0, p1, p2, Some(n), Some((uv[0] as f64, uv[1] as f64)), material.clone());
+        object_list::add(&mut list, t);
     }
 
-    println!("Created mesh with {} triangles", list.objects.len());
+    let aux = if let AuxObjectData::ObjectList(aux) = &list.aux { aux } else { panic!("Could not extract ObjectList from aux data") };
+    println!("Created mesh with {} triangles", aux.objects.len());
 
     Some(list)
 }

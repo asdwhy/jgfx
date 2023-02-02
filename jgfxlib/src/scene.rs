@@ -1,17 +1,17 @@
 use crate::{
     colour::Colour,
-    objects::{object_list::ObjectList},
+    objects::Object,
     camera::Camera
 };
 
 pub struct Scene {
-    pub objects: ObjectList,
+    pub objects: Object,
     pub camera: Camera,
     pub background_colour: Colour
 }
 
 impl Scene {
-    pub fn new(camera: Camera, objects: ObjectList, background_colour: Colour) -> Self {
+    pub fn new(camera: Camera, objects: Object, background_colour: Colour) -> Self {
         Self {
             camera,
             objects,
