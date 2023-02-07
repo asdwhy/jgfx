@@ -27,11 +27,10 @@ impl AABB {
         let mut t_max = t_max;
 
         // x dim
-        let mut inv_d = 1.0 / r.dir.x;
-        let mut t0 = (self.minimum.x - r.origin.x) * inv_d;
-        let mut t1 = (self.maximum.x - r.origin.x) * inv_d;
+        let mut t0 = (self.minimum.x - r.origin.x) * r.inv.x;
+        let mut t1 = (self.maximum.x - r.origin.x) * r.inv.x;
 
-        if inv_d < 0.0 {
+        if r.inv.x < 0.0 {
             std::mem::swap(&mut t0, &mut t1);
         }
 
@@ -43,11 +42,10 @@ impl AABB {
         }
 
         // y dim
-        inv_d = 1.0 / r.dir.y;
-        t0 = (self.minimum.y - r.origin.y) * inv_d;
-        t1 = (self.maximum.y - r.origin.y) * inv_d;
+        t0 = (self.minimum.y - r.origin.y) * r.inv.y;
+        t1 = (self.maximum.y - r.origin.y) * r.inv.y;
 
-        if inv_d < 0.0 {
+        if r.inv.y < 0.0 {
             std::mem::swap(&mut t0, &mut t1);
         }
 
@@ -59,11 +57,10 @@ impl AABB {
         }
 
         // z dim
-        inv_d = 1.0 / r.dir.z;
-        t0 = (self.minimum.z - r.origin.z) * inv_d;
-        t1 = (self.maximum.z - r.origin.z) * inv_d;
+        t0 = (self.minimum.z - r.origin.z) * r.inv.z;
+        t1 = (self.maximum.z - r.origin.z) * r.inv.z;
 
-        if inv_d < 0.0 {
+        if r.inv.z < 0.0 {
             std::mem::swap(&mut t0, &mut t1);
         }
 

@@ -30,7 +30,7 @@ fn main() {
     let mut background_colour: Colour = Colour::new(0.7, 0.8, 1.0);
     let time = 0.0..0.0;
 
-    let scene_num = 1;
+    let scene_num = 5;
 
     match scene_num {
         1 => {

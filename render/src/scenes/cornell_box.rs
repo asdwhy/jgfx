@@ -48,6 +48,5 @@ pub fn build_scene() -> Object {
     affine::set_inverse(&mut transform);
     object_list::add(&mut objects,transform);
 
-    // return bvh
     bvh::new(objects, 0.0..0.0)
 }

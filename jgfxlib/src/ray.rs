@@ -6,7 +6,8 @@ use crate::{
 pub struct Ray {
     pub origin: Point3,
     pub dir: Vec3,
-    pub time: f64
+    pub time: f64,
+    pub inv: Vec3 // inverse of ray direction components
 }
 
 impl Ray {
@@ -14,7 +15,12 @@ impl Ray {
         Self {
             origin,
             dir,
-            time
+            time,
+            inv: Vec3::new( // precomputed for later use
+                1.0/dir.x,
+                1.0/dir.y,
+                1.0/dir.z
+            )
         }
     }
 
