@@ -20,7 +20,7 @@ impl NoiseTexture {
 
 impl Texture for NoiseTexture {
     fn value(&self, _: f64, _: f64, p: &Point3) -> Colour {
-        let mut noise = self.frequency * p.z + 10.0 * self.noise.turbulence(&p, 7);
+        let mut noise = self.frequency * p.z + 10.0 * self.noise.turbulence(p, 7);
         noise = noise.sin();
         noise = (1.0 + noise) * 0.5; // since noise in [-1, 1], map it to valid colours
 

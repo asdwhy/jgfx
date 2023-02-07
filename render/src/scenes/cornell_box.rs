@@ -34,16 +34,16 @@ pub fn build_scene() -> Object {
     // boxes
     let b: Object = rect_prism::new(Point3::zero(), Point3::new(165.0, 330.0, 165.0), white.clone());
     let mut transform = affine::new(b);
-    affine::rotate_y(&mut &mut transform, (15.0 as f64).to_radians());
+    affine::rotate_y(&mut transform, 15.0_f64.to_radians());
     affine::translate(&mut transform, 265.0, 0.0, 295.0);
     affine::set_inverse(&mut transform);
     object_list::add(&mut objects,transform);
 
-    let b: Object = rect_prism::new(Point3::zero(), Point3::from_value(165.0), white.clone());
+    let b: Object = rect_prism::new(Point3::zero(), Point3::from_value(165.0), white);
     let mut transform = affine::new(b);
     // transform.rotate_y((18.0 as f64).to_radians()); // original rotation
-    affine::rotate_y(&mut transform, (-28.0 as f64).to_radians());
-    affine::rotate_x(&mut transform, (-30.0 as f64).to_radians());
+    affine::rotate_y(&mut transform, (-28.0_f64).to_radians());
+    affine::rotate_x(&mut transform, (-30.0_f64).to_radians());
     affine::translate(&mut transform, 130.0, 0.0, 65.0);
     affine::set_inverse(&mut transform);
     object_list::add(&mut objects,transform);

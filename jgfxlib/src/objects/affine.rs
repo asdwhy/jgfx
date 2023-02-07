@@ -46,12 +46,12 @@ fn inverse_ray_transform(transformation: &Affine, r: &Ray) -> Ray {
         inv[3][3]
     );
 
-    d = d - t;
+    d -= t;
 
     let origin = Vec3::new(o.x, o.y, o.z);
     let dir = Vec3::new(d.x, d.y, d.z);
 
-    Ray::new(origin, dir, r.time.clone())
+    Ray::new(origin, dir, r.time)
 }
 
 fn hitrec_transform(transformation: &Affine, rec: &mut Intersection, r: &Ray) {
@@ -174,8 +174,8 @@ fn bounding_box(obj: &Object, time: Range<f64>) -> Option<AABB> {
     match (aux.object.bounding_box)(&aux.object, time) {
         Some(bbox) => {
             // transform minimum and maximum corners
-            let p1 = point_transform(&aux, &bbox.minimum);
-            let p2 = point_transform(&aux, &bbox.maximum);
+            let p1 = point_transform(aux, &bbox.minimum);
+            let p2 = point_transform(aux, &bbox.maximum);
 
             // get other corners of bounding box
             let dx = bbox.maximum.x - bbox.minimum.x;
@@ -190,12 +190,12 @@ fn bounding_box(obj: &Object, time: Range<f64>) -> Option<AABB> {
             let p8 = &bbox.minimum + Point3::new(dx, dy, 0.0);
 
             // transform other corners as well
-            let p3 = point_transform(&aux, &p3);
-            let p4 = point_transform(&aux, &p4);
-            let p5 = point_transform(&aux, &p5);
-            let p6 = point_transform(&aux, &p6);
-            let p7 = point_transform(&aux, &p7);
-            let p8 = point_transform(&aux, &p8);
+            let p3 = point_transform(aux, &p3);
+            let p4 = point_transform(aux, &p4);
+            let p5 = point_transform(aux, &p5);
+            let p6 = point_transform(aux, &p6);
+            let p7 = point_transform(aux, &p7);
+            let p8 = point_transform(aux, &p8);
 
             // take min and max values as new bounding box
             let min_x = fmin(fmin(fmin(fmin(fmin(fmin(fmin(p1.x, p2.x), p3.x), p4.x), p5.x), p6.x), p7.x), p8.x);
@@ -219,10 +219,10 @@ fn bounding_box(obj: &Object, time: Range<f64>) -> Option<AABB> {
 fn intersect(obj: &Object, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {
     let aux = if let AuxObjectData::Affine(aux) = &obj.aux { aux } else { panic!("Could not extract Affine from aux data") };
 
-    let rt = inverse_ray_transform(&aux, r);
-    return match (aux.object.intersect)(&aux.object, rng, &rt, t_min, t_max) {
+    let rt = inverse_ray_transform(aux, r);
+    match (aux.object.intersect)(&aux.object, rng, &rt, t_min, t_max) {
         Some(mut rec) => {
-            hitrec_transform(&aux, &mut rec, r);
+            hitrec_transform(aux, &mut rec, r);
             Some(rec)
         },
         None => None,

@@ -74,7 +74,7 @@ impl AABB {
             return false;
         }
 
-        return true;
+        true
     }
 }
 

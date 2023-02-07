@@ -22,6 +22,6 @@ impl SolidColour {
 
 impl Texture for SolidColour {
     fn value(&self, _: f64, _: f64, _: &Point3) -> Colour {
-        self.colour_value.clone()
+        self.colour_value
     }
 }

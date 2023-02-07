@@ -17,7 +17,7 @@ fn main() {
 
     // Image
     let mut aspect_ratio = 16.0/9.0;
-    let mut image_width = 512 as u32;
+    let mut image_width = 512_u32;
     let mut samples_per_pixel = 300;
     let max_depth = 15;
 
@@ -26,19 +26,19 @@ fn main() {
     let lookfrom: Point3;
     let lookat: Point3;
     let vfov: f64;
-    let mut aperture: f64 = 0.0;
+    let aperture: f64 = 0.0;
     let mut background_colour: Colour = Colour::new(0.7, 0.8, 1.0);
-    let mut time = 0.0..0.0;
+    let time = 0.0..0.0;
 
-    let scene_num = 5;
+    let scene_num = 1;
 
     match scene_num {
-        // 1 => {
-        //     world = scenes::two_spheres::build_scene();
-        //     lookfrom = Point3::new(13.0, 2.0, 3.0);
-        //     lookat = Point3::zero();
-        //     vfov = 20.0;
-        // },
+        1 => {
+            world = scenes::two_spheres::build_scene();
+            lookfrom = Point3::new(13.0, 2.0, 3.0);
+            lookat = Point3::zero();
+            vfov = 20.0;
+        },
         // 2 => {
         //     world = scenes::two_perlin_spheres::build_scene();
         //     lookfrom = Point3::new(13.0, 2.0, 3.0);

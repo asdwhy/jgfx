@@ -1,5 +1,5 @@
 // pub mod random_scene;
-// pub mod two_spheres;
+pub mod two_spheres;
 // pub mod two_perlin_spheres;
 // pub mod earth;
 // pub mod simple_light;

@@ -45,13 +45,13 @@ fn bounding_box(obj: &Object, time: Range<f64>) -> Option<AABB> {
     let aux = if let AuxObjectData::MovingSphere(aux) = &obj.aux { aux } else { panic!("Could not extract MovingSphere from aux data") };
 
     let box0 = AABB::new(
-        get_origin(&aux, time.start) - Vec3::new(aux.radius, aux.radius, aux.radius),
-        get_origin(&aux, time.start) + Vec3::new(aux.radius, aux.radius, aux.radius)
+        get_origin(aux, time.start) - Vec3::new(aux.radius, aux.radius, aux.radius),
+        get_origin(aux, time.start) + Vec3::new(aux.radius, aux.radius, aux.radius)
     );
 
     let box1 = AABB::new(
-        get_origin(&aux, time.end) - Vec3::new(aux.radius, aux.radius, aux.radius),
-        get_origin(&aux, time.end) + Vec3::new(aux.radius, aux.radius, aux.radius)
+        get_origin(aux, time.end) - Vec3::new(aux.radius, aux.radius, aux.radius),
+        get_origin(aux, time.end) + Vec3::new(aux.radius, aux.radius, aux.radius)
     );
 
     Some(surrounding_box(box0, box1))
@@ -60,7 +60,7 @@ fn bounding_box(obj: &Object, time: Range<f64>) -> Option<AABB> {
 fn intersect(obj: &Object, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {
     let aux = if let AuxObjectData::MovingSphere(aux) = &obj.aux { aux } else { panic!("Could not extract MovingSphere from aux data") };
 
-    let oc = &r.origin - get_origin(&aux, r.time);
+    let oc = &r.origin - get_origin(aux, r.time);
     let a = r.dir.length_squared();
     let half_b = oc.dot(&r.dir);
     let c = oc.length_squared() - aux.radius * aux.radius;
@@ -84,7 +84,7 @@ fn intersect(obj: &Object, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) ->
 
     let t = root;
     let p = r.at(root);
-    let n = (&p - get_origin(&aux, r.time)) / aux.radius;
+    let n = (&p - get_origin(aux, r.time)) / aux.radius;
     let uv = get_sphere_uv(&n);
 
     let mut rec = Intersection::new(t, p, n, &aux.material, uv.0, uv.1);

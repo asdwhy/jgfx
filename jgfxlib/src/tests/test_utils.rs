@@ -1,4 +1,3 @@
-use std::cmp::Ordering;
 use crate::{
     utils::{is_zero, equal, in_range, max, fmin, fmax, clamp, sort_from},
     constants::EPSILON
@@ -72,12 +71,10 @@ fn test_clamp() {
 #[test]
 fn test_sort_from() {
     let v = vec![4, 2, 6, 3, 4, 3, 8, 6];
-    let mut v2 = v.clone();
+    let mut v2 = v;
 
     sort_from(&mut v2, 0, 4, |a, b| {
-        if a < b { Ordering::Less } 
-        else if a == b { Ordering::Equal } 
-        else { Ordering::Greater }
+       a.cmp(b)
     });
 
     assert_eq!(vec![2,3,4,6,4,3,8,6], v2);

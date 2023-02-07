@@ -84,7 +84,7 @@ fn intersect(obj: &Object, _: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) ->
     
     let mut rec = Intersection::new(t, p, n, &aux.material, uv.0, uv.1);
 
-    rec.set_face_normal(&r);
+    rec.set_face_normal(r);
     
     Some(rec)
 }

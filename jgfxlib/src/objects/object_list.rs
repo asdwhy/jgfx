@@ -23,8 +23,8 @@ pub fn new() -> Object {
 }
 
 /// Add object to this object list
-pub fn add(obj: &mut Object, object: Object) {
-    let aux = if let AuxObjectData::ObjectList(aux) = &mut obj.aux { aux } else { panic!("Could not extract ObjectList from aux data") };
+pub fn add(list: &mut Object, object: Object) {
+    let aux = if let AuxObjectData::ObjectList(aux) = &mut list.aux { aux } else { panic!("Could not extract ObjectList from aux data") };
 
     aux.objects.push(object);
 }
@@ -47,7 +47,7 @@ fn bounding_box(obj: &Object, time: Range<f64>) -> Option<AABB> {
     let mut output_box: Option<AABB> = None;
 
     for obj in &aux.objects {
-        let the_box = match (obj.bounding_box)(&obj, time.clone()) {
+        let the_box = match (obj.bounding_box)(obj, time.clone()) {
             None => return None,
             Some(the_box) => the_box
         };
@@ -69,7 +69,7 @@ fn intersect(obj: &Object, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) 
     let mut closest_t = t_max;
 
     for obj in aux.objects.iter() {
-        if let Some(rec) = (obj.intersect)(&obj, rng, r, t_min, closest_t) {
+        if let Some(rec) = (obj.intersect)(obj, rng, r, t_min, closest_t) {
             closest_t = rec.t;
             ret = Some(rec);
         }

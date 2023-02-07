@@ -64,7 +64,7 @@ impl Camera {
         let dir: Vec3;
         
         if self.lens_radius == 0.0 { // pinhole camera => everything is in focus
-            origin = self.origin.clone();
+            origin = self.origin;
             dir = &self.lower_left_corner + s * &self.horizontal + t * &self.vertical - &self.origin;
         } else {
             let rd = self.lens_radius * random_in_unit_disk(rng);

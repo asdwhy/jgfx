@@ -23,7 +23,7 @@ pub fn new(list: Object, time: Range<f64>) -> Object {
     }
 
     let len = aux.objects.len();
-    let list: Vec<Arc<Object>> = aux.objects.into_iter().map(|o| Arc::new(o)).collect();
+    let list: Vec<Arc<Object>> = aux.objects.into_iter().map(Arc::new).collect();
 
     from_indexes(list, 0, len, time)
 }
@@ -34,8 +34,8 @@ fn from_indexes(src_objects: Vec<Arc<Object>>, start: usize, end: usize, time: R
     let axis = random_i32(0..3);
 
     let comparator = |a: &Object, b: &Object| -> bool {
-        let box_a = (a.bounding_box)(&a, 0.0..0.0); // I know this looks wrong but its right!
-        let box_b = (b.bounding_box)(&b, 0.0..0.0); // I think...
+        let box_a = (a.bounding_box)(a, 0.0..0.0); // I know this looks wrong but its right!
+        let box_b = (b.bounding_box)(b, 0.0..0.0); // I think...
         
         if box_a.is_none() && box_b.is_none() {
             eprintln!("No bounding box in BvhNode constructor, a passed object had no bounding box implemented");

@@ -45,13 +45,8 @@ fn bounding_box(obj: &Object, time: Range<f64>) -> Option<AABB> {
 fn intersect(obj: &Object, rng: &mut SmallRng, r: &Ray, t_min: f64, t_max: f64) -> Option<Intersection> {
     let aux = if let AuxObjectData::ConstantMedium(aux) = &obj.aux { aux } else { panic!("Could not extract ConstantMedium from aux data") };
 
-    let mut rec1 = if let Some(rec) = (aux.boundary.intersect)(&aux.boundary, rng, r, NEG_INFINITY, INFINITY) { rec } else {
-        return None;
-    };
-
-    let mut rec2 = if let Some(rec) = (aux.boundary.intersect)(&aux.boundary, rng, r, rec1.t + 0.0001, INFINITY) { rec } else {
-        return None;
-    };
+    let mut rec1 = (aux.boundary.intersect)(&aux.boundary, rng, r, NEG_INFINITY, INFINITY)?;
+    let mut rec2 = (aux.boundary.intersect)(&aux.boundary, rng, r, rec1.t + 0.0001, INFINITY)?;
 
     if rec1.t < t_min { rec1.t = t_min; }
     if rec2.t > t_max { rec2.t = t_max; }

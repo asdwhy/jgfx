@@ -99,6 +99,6 @@ impl Renderer {
             None => return emitted // if light doesnt scatter off this object, return the light emitted from it
         };
 
-        return emitted + attenuation * self.path_trace(rng, scene, scattered, depth - 1)
+        emitted + attenuation * self.path_trace(rng, scene, scattered, depth - 1)
     }
 }

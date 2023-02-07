@@ -63,11 +63,11 @@ impl Perlin {
     /// Returns turbulent noise
     pub fn turbulence(&self, p: &Point3, depth: u32) -> f64 {
         let mut accum = 0.0;
-        let mut tmp_p = p.clone();
+        let mut tmp_p = *p;
         let mut weight = 1.0;
 
         for _ in 0..depth {
-            accum += weight * Self::noise(&self, &tmp_p);
+            accum += weight * Self::noise(self, &tmp_p);
             weight *= 0.5;
             tmp_p *= 2.0;
         }
@@ -90,9 +90,7 @@ impl Perlin {
     fn permute(p: &mut[i32; POINT_COUNT]) {
         for i in (0..POINT_COUNT-1).rev() {
             let target = random_i32(0..((i+1usize) as i32)) as usize;
-            let tmp = p[i];
-            p[i] = p[target];
-            p[target] = tmp;
+            p.swap(i, target);
         }
     }
 

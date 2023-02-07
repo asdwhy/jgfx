@@ -35,10 +35,10 @@ impl Material for Lambertian {
 
         // catch near 0 direction
         if scatter_direction.near_zero() {
-            scatter_direction = rec.n.clone();
+            scatter_direction = rec.n;
         }
 
-        let scattered = Ray::new(rec.p.clone(), scatter_direction, ray_in.time);
+        let scattered = Ray::new(rec.p, scatter_direction, ray_in.time);
         let attenuation = self.albedo.value(rec.u, rec.v, &rec.p);
 
         Some((attenuation, scattered))

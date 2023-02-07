@@ -2,9 +2,10 @@ use std::sync::Arc;
 
 use jgfxlib::{
     objects::{
-        object_list::ObjectList,
-        sphere::Sphere, 
-        affine::Affine
+        object_list,
+        sphere, 
+        affine, 
+        Object
     }, 
     colour::Colour, 
     textures::checker_texture::CheckerTexture, 
@@ -13,27 +14,29 @@ use jgfxlib::{
     }
 };
 
-pub fn build_scene() -> ObjectList {
-    let mut world = ObjectList::new();
+pub fn build_scene() -> Object {
+    let mut world = object_list::new();
 
     let checker = Arc::new(CheckerTexture::new(Colour::new(0.2, 0.3, 0.1), Colour::new(0.9, 0.9, 0.9)));
     let mat = Arc::new(Lambertian::from_texture(checker));
 
-    let sphere = Sphere::canonical(mat.clone());
-    let mut transform = Affine::new(Arc::new(sphere));
-    transform.scale_uniform(10.0);
-    transform.translate(0.0, -10.0, 0.0);
-    transform.set_inverse();
-    world.add(Arc::new(transform));
+    let sphere = sphere::canonical(mat.clone());
+    let mut transform = affine::new(sphere);
 
-    let sphere = Sphere::canonical(mat.clone());
-    let mut transform = Affine::new(Arc::new(sphere));
-    transform.scale_uniform(10.0);
-    transform.translate(0.0, 10.0, 0.0);
-    transform.set_inverse();
-    world.add(Arc::new(transform));
+    affine::scale_uniform(&mut transform, 10.0);
+    affine::translate(&mut transform, 0.0, -10.0, 0.0);
+    affine::set_inverse(&mut transform);
+    object_list::add(&mut world, transform);
+
+    let sphere = sphere::canonical(mat.clone());
+    let mut transform = affine::new(sphere);
+    affine::scale_uniform(&mut transform, 10.0);
+    affine::translate(&mut transform, 0.0, 10.0, 0.0);
+    affine::set_inverse(&mut transform);
+    object_list::add(&mut world, transform);
 
     world
+
 
     // let mut world = ObjectList::new();
 

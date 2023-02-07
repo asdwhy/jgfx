@@ -55,8 +55,8 @@ fn create_mesh(model: Obj, material: Arc<dyn Material>) -> Option<Object> {
         uv[1] += v2.uv()?[1];
         
         // average uv
-        uv[0] = uv[0] / 3.0;
-        uv[1] = uv[1] / 3.0;
+        uv[0] /= 3.0;
+        uv[1] /= 3.0;
 
         // TODO: interpolate uv value instead of simple average
         let t = triangle::new(p0, p1, p2, Some(n), Some((uv[0] as f64, uv[1] as f64)), material.clone());
