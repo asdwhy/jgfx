@@ -261,7 +261,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "jgfxlib"
+name = "jpeg-decoder"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc0000e42512c92e31c2252315bda326620a4e034105e900c98ec492fa077b3e"
+dependencies = [
+ "rayon",
+]
+
+[[package]]
+name = "jrpt"
 version = "0.1.0"
 dependencies = [
  "image",
@@ -269,15 +278,6 @@ dependencies = [
  "rand",
  "rayon",
  "wavefront",
-]
-
-[[package]]
-name = "jpeg-decoder"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc0000e42512c92e31c2252315bda326620a4e034105e900c98ec492fa077b3e"
-dependencies = [
- "rayon",
 ]
 
 [[package]]
@@ -581,7 +581,7 @@ dependencies = [
 name = "render"
 version = "0.1.0"
 dependencies = [
- "jgfxlib",
+ "jrpt",
  "mimalloc",
  "rand",
 ]

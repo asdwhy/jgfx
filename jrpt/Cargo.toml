@@ -1,9 +1,11 @@
 [package]
-name = "render"
+name = "jrpt"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-jrpt = { path = "../jrpt" }
+image = "0.24.5"
+rayon = "1.6.1"
 rand = {version = "0.8.5", features = ["small_rng"] }
-mimalloc = { version = "0.1.32", default-features = false }
+nalgebra = "0.32.1"
+wavefront = "0.2.3"

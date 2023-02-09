@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use jgfxlib::{objects::{object_list::ObjectList, sphere::Sphere, moving_sphere::MovingSphere, bvh::BvhNode, affine::Affine}, colour::Colour, textures::checker_texture::CheckerTexture, materials::{lambertian::Lambertian, metal::Metal, dialetric::Dialetric}, point3::Point3, vec3::Vec3, random::{random, random_in_range}};
+use jrpt::{objects::{object_list::ObjectList, sphere::Sphere, moving_sphere::MovingSphere, bvh::BvhNode, affine::Affine}, colour::Colour, textures::checker_texture::CheckerTexture, materials::{lambertian::Lambertian, metal::Metal, dialetric::Dialetric}, point3::Point3, vec3::Vec3, random::{random, random_in_range}};
 use rand::{rngs::SmallRng, SeedableRng, Rng};
 
 pub fn build_scene() -> ObjectList {
