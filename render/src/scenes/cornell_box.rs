@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use jgfxlib::{
+use jrpt::{
     objects::{
         object_list, 
         aa_rectangles::{yz_rect, xz_rect, xy_rect }, 

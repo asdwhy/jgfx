@@ -1,6 +1,6 @@
 use std::{sync::Arc, f64::consts::PI};
 
-use jgfxlib::{
+use jrpt::{
     objects::{
         object_list::ObjectList, 
         aa_rectangles::{

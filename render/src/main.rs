@@ -1,12 +1,12 @@
 mod scenes;
 
-use jgfxlib::colour::Colour;
-use jgfxlib::objects::{Object, object_list};
-use jgfxlib::{camera::Camera};
-use jgfxlib::vec3::Vec3;
-use jgfxlib::scene::{Scene};
-use jgfxlib::point3::Point3;
-use jgfxlib::renderer::Renderer;
+use jrpt::colour::Colour;
+use jrpt::objects::{Object, object_list};
+use jrpt::{camera::Camera};
+use jrpt::vec3::Vec3;
+use jrpt::scene::{Scene};
+use jrpt::point3::Point3;
+use jrpt::renderer::Renderer;
 
 #[global_allocator]
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;

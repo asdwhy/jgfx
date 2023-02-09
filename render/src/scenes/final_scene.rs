@@ -1,6 +1,6 @@
 // use std::sync::Arc;
 // use rand::{rngs::SmallRng, SeedableRng, Rng};
-// use jgfxlib::{
+// use jrpt::{
 //     hittables::{
 //         hittable_list::ObjectList, aa_rectangles::{
 //             xz_rect::XzRectangle,

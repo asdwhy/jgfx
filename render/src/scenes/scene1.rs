@@ -1,6 +1,6 @@
 use std::{sync::Arc, f64::consts::PI};
 
-use jgfxlib::{
+use jrpt::{
     objects::{
         object_list::ObjectList, 
         aa_rectangles::{
@@ -139,9 +139,9 @@ pub fn build_scene() -> ObjectList {
 }
 
 fn random_lambertian(rng: &mut SmallRng) -> Arc<Lambertian> {
-    Arc::new(Lambertian::new(jgfxlib::random::random(rng)))
+    Arc::new(Lambertian::new(jrpt::random::random(rng)))
 }
 
 fn random_metal(rng: &mut SmallRng, fuzzy: f64) -> Arc<Metal> {
-    Arc::new(Metal::new(jgfxlib::random::random(rng), fuzzy))
+    Arc::new(Metal::new(jrpt::random::random(rng), fuzzy))
 }

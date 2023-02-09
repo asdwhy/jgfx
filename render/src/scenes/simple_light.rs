@@ -1,6 +1,6 @@
 // use std::sync::Arc;
 
-// use jgfxlib::{
+// use jrpt::{
 //     hittables::{
 //         hittable_list::ObjectList, sphere::Sphere, aa_rectangles::xy_rect::XyRectangle
 //     }, 
