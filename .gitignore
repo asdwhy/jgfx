@@ -1,5 +1,6 @@
 /target
 *.png
 /textures
+/meshes
 /images
 callgrind.*
