@@ -1,29 +1,30 @@
-use std::{sync::Arc};
+use std::sync::Arc;
 
 use jrpt::{
+    materials::lambertian::Lambertian,
     objects::{
-        object_list::ObjectList, sphere::Sphere, affine::Affine,
-    }, 
-    textures::{image_texture::ImageTexture}, 
-    materials::{
-        lambertian::Lambertian
-    }
+        affine::{self},
+        object_list::{self},
+        sphere::{self},
+        Object,
+    },
+    textures::image_texture::ImageTexture,
 };
 
-pub fn build_scene() -> ObjectList {
-    let mut world = ObjectList::new();
+pub fn build_scene() -> Object {
+    let mut world = object_list::new();
 
     let earth_texture = Arc::new(ImageTexture::new("textures/earthmap.jpg"));
     let earth_surface = Arc::new(Lambertian::from_texture(earth_texture));
 
-    let sphere = Sphere::canonical(earth_surface);
-    let mut transform = Affine::new(Arc::new(sphere));
-    transform.rotate_z(0.4);
-    transform.scale_uniform(2.0);
-    transform.translate(1.0, 1.0, 0.0);
-    transform.set_inverse();
+    let sphere = sphere::canonical(earth_surface);
+    let mut transform = affine::new(sphere);
+    affine::rotate_z(&mut transform, 0.4);
+    affine::scale_uniform(&mut transform, 2.0);
+    affine::translate(&mut transform, 1.0, 1.0, 0.0);
+    affine::set_inverse(&mut transform);
 
-    world.add(Arc::new(transform));
+    object_list::add(&mut world, transform);
 
     world
 }

@@ -7,7 +7,7 @@ use crate::{
     materials::Material, 
     aabb::AABB,
     objects::{
-        sphere::{Sphere}, 
+        sphere::Sphere,
         triangle::Triangle, 
         constant_medium::ConstantMedium,
         rect_prism::RectangularPrism, 

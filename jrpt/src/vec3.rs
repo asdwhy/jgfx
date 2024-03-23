@@ -1,18 +1,16 @@
-use std::{ops::{self, Index, IndexMut}};
-use crate::utils::{equal, is_zero, fmin};
+use crate::utils::{equal, fmin, is_zero};
+use std::ops::{self, Index, IndexMut};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
-    pub z: f64
+    pub z: f64,
 }
 
 impl Vec3 {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
-        Self {
-            x, y, z
-        }
+        Self { x, y, z }
     }
 
     /// Creates a new Vec3, with all three dimensions set to passed value
@@ -20,14 +18,16 @@ impl Vec3 {
         Self {
             x: val,
             y: val,
-            z: val
+            z: val,
         }
     }
 
     // Returns 0 vector
     pub fn zero() -> Self {
         Self {
-            x: 0.0, y: 0.0, z: 0.0
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
         }
     }
 
@@ -36,7 +36,7 @@ impl Vec3 {
     }
 
     pub fn length_squared(&self) -> f64 {
-        self.x*self.x + self.y*self.y + self.z*self.z
+        self.x * self.x + self.y * self.y + self.z * self.z
     }
 
     pub fn dot(&self, rhs: &Self) -> f64 {
@@ -45,9 +45,9 @@ impl Vec3 {
 
     pub fn cross(&self, rhs: &Self) -> Self {
         Self {
-            x: self.y*rhs.z - self.z*rhs.y,
-            y: self.z*rhs.x - self.x*rhs.z,
-            z: self.x*rhs.y - self.y*rhs.x
+            x: self.y * rhs.z - self.z * rhs.y,
+            y: self.z * rhs.x - self.x * rhs.z,
+            z: self.x * rhs.y - self.y * rhs.x,
         }
     }
 
@@ -56,7 +56,7 @@ impl Vec3 {
         Self {
             x: self.x / len,
             y: self.y / len,
-            z: self.z / len
+            z: self.z / len,
         }
     }
 
@@ -332,7 +332,7 @@ impl Index<i32> for Vec3 {
     }
 }
 
-impl IndexMut<i32> for Vec3 {    
+impl IndexMut<i32> for Vec3 {
     fn index_mut(&mut self, index: i32) -> &mut Self::Output {
         if index == 0 {
             &mut self.x
